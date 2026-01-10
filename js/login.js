@@ -23,5 +23,10 @@ if(emailInput.value==""){
 
 loginBtn.addEventListener("click",checkInputs);
 
-
+emailInput.addEventListener("invalid", () => {
+    emailInput.setCustomValidity("تم تغييرها");
+});
+passInput.addEventListener("invalid", () => {
+    passInput.setCustomValidity("تم تغييرها");
+});
 
