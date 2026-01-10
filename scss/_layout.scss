@@ -1,0 +1,204 @@
+body{
+   font-family: 'Baloo 2', cursive;
+   background: url(https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg);
+
+}
+.navbar {
+  background-color: $color-bg;
+  color: $color-text;
+
+  .navbar-brand {
+    font-weight: bold;
+      color: $color-text;
+
+
+    &:hover {
+      color: $color-text;
+      cursor: default;
+      
+    }
+  }
+
+  .nav-link {
+      color: $color-text;
+
+
+    &:hover {
+      background-color: $color-text;
+      color: $color-secondary;
+      border-radius: 7px;
+    }
+    &:active {
+         background-color: $color-text;
+      color: $color-secondary;
+      border-radius: 7px;
+    }
+  }
+}
+.hero {
+  min-height: 90vh;
+  height: auto;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.521);
+  color: $color-text; 
+}
+.hero-text{
+  padding: 20px;
+}
+.hero h1 {
+  margin-bottom: 10px;
+  font-size: 50px;
+}
+
+.hero p {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+.brand-name{
+font-weight: bold;
+font-size: 60px;
+}
+.hero-image img{
+  max-width: 100%;
+  height: auto;
+}
+.btn-primary{
+  background-color: $color-bg;
+  color: $color-text;
+  border: none;
+  margin-right: 5px;
+  font-weight: bold;
+}
+.btn-primary:hover{
+  background-color: $color-text;
+  border: none;
+}
+.btn-outline-primary{
+  color: $color-text;
+  border-color: $color-text;
+  font-weight: bold;
+
+}
+.btn-outline-primary:hover{
+  color: $color-secondary;
+  background-color: $color-text;
+  border-color: $color-text;
+
+}
+.btn-outline-primary:active{
+  color: $color-secondary;
+  background-color: $color-text;
+  border-color: $color-text;
+
+}
+.hero-button{
+  margin: 5px;
+}
+.note{
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  h2{
+        color: $color-text;
+        font-weight: bold;
+
+  }
+
+  transition: transform 0.3s ease;}
+   .note:hover{
+  transform: scale(1.05);
+
+ }
+
+
+.note-1 {
+  background: rgba(120, 250, 94, 0.582);
+  transform: rotate(-2deg);
+}
+
+.note-2 {
+  background: rgba(202, 150, 233, 0.726);
+  transform: rotate(1.5deg);
+}
+
+.note-3 {
+  background: #bbdefb8e;
+  transform: rotate(-1deg);
+}
+.clip{
+  font-size:50px ;
+  color: $color-text;
+}
+.feature{
+  color: $color-text;
+  font-weight: bold;
+  h2{
+    color: $color-text;
+  }
+ .feature-title{
+    font-weight: bold;
+  }
+}
+.contact{
+  display: flex;
+  justify-content: space-between;
+  border: solid $color-text;
+  border-radius: 10px;
+  margin: 10px;
+  background-color: rgba(255, 255, 255, 0.37);
+  padding: 5px;
+    p{
+    font-weight: bold;
+  }
+  .contact-text{
+    color: $color-text;
+  }
+  .contact-button{
+    display: flex;
+   align-items: center;
+  justify-content: center;
+  margin: 5px;
+  }
+}
+.login-box{
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+background-color: $color-bg;
+margin: 100px;
+border-radius: 15px;
+}
+.school-cards{
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;//هاي هي يلي عملتلي السكرول 
+  padding: 20px;
+  justify-content: flex-start;
+  .card{
+  flex: 0 0 auto;//هاي عشان امنع الكارد تكبر او تصغر لانه مع بوتستراب بتكبر و بتصغر و ما بتعمل سكرول 
+  }}
+.text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20px;
+  text-align: center;
+  color: $color-text;
+}
+.search{
+  margin-right: 100px;
+  margin-left: 100px;
+}
+.school-img{
+height: 200px;
+}
+
+#reset{
+  margin-left: 120px;
+}
+.stars{
+  color: gold;
+}

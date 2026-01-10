@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Indie+Flower&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Login Bage</title>
+</head>
+<body>
+    <div class="login-box">
+        <h1>Login</h1>
+        <form>
+        
+        <label for="email"> Email</label>
+        <br>
+        <input type="email" id ="email" >
+        <br>
+        <br>
+        <label for="pass"> Password</label>
+        <br>
+        <input type="password" id="pass" > 
+        <br>
+        <br>
+        
+           
+    <div class="role-select">
+  <label>
+    <input type="radio" name="role" value="student">
+    Student
+  </label>
+
+  <label>
+    <input type="radio" name="role" value="parent">
+    Parent
+  </label>
+
+  <label>
+    <input type="radio" name="role" value="teacher">
+    Teacher
+  </label>
+    </div>
+    <button class="btn btn-primary btn-lg" id="login-button">Login</button>
+</div>
+    
+      <script src="js/bootstrap.bundle.min.js"></script>
+     <script src="js/login.js"></script>
+</body>
+</html>
