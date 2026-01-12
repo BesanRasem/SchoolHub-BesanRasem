@@ -162,15 +162,7 @@ font-size: 60px;
   margin: 5px;
   }
 }
-.login-box{
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-background-color: $color-bg;
-margin: 100px;
-border-radius: 15px;
-}
+
 .school-cards{
   display: flex;
   gap: 20px;
@@ -202,3 +194,21 @@ height: 200px;
 .stars{
   color: gold;
 }
+.login-card{
+  background-color: $color-bg;
+}
+.hide-field {
+  display: none;
+}
+.form-message {
+  font-size: 14px;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: $color-text;
+}
+

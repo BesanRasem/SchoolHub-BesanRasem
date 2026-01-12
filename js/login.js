@@ -1,32 +1,96 @@
-passInput = document.getElementById("pass");
- emailInput = document.getElementById("email");
- loginBtn = document.getElementById("login-button");
- message = document.createElement("p");
- document.querySelector(".login-box").appendChild(message);
- message.style.color = "green";
-function checkInputs() {
+const role = document.getElementById("role");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const studentID = document.getElementById("studentID");
+const classCode = document.getElementById("classCode");
+const loginForm = document.querySelector(".login-form");
+const message = document.querySelector(".form-message");
+const welcomeTitle = document.getElementById("welcomeTitle");
+const roleImage = document.getElementById("roleImage");
 
-if (passInput.value !== "" && emailInput.value !== "") {
-message.textContent = "";
+const allInputs = [
+  loginEmail,
+  loginPassword,
 
-} else {
-   message.textContent = "Please fill in all fields";
+];
+function disableInputs() {
+  allInputs.forEach(input => {
+    input.disabled = true;
+  });
+}
+disableInputs();
+function enableInputs() {
+  loginEmail.disabled = false;
+  loginPassword.disabled = false;
+}
+function addHideField() {
+    studentID.classList.add("hide-field");
+  classCode.classList.add("hide-field");
 
 }
-if(passInput.value==""){
-  passInput.style.border = "2px solid green"
-}
-if(emailInput.value==""){
-  emailInput.style.border = "2px solid green"
-}
+function removeHideField() {
+studentID.classList.remove("hide-field");
+ classCode.classList.remove("hide-field");
 }
 
-loginBtn.addEventListener("click",checkInputs);
 
-emailInput.addEventListener("invalid", () => {
-    emailInput.setCustomValidity("تم تغييرها");
+role.addEventListener("change", function () {
+  const selectedRole = this.value;
+  if(selectedRole === "student" || selectedRole === "parent"){
+    enableInputs();
+    removeHideField();
+     
+  }
+  else
+  {
+    enableInputs();
+    addHideField();
+
+  }
+  if(selectedRole=="student"){
+     welcomeTitle.textContent = "Welcome, Student!";
+  }
+  if(selectedRole=="parent"){
+     welcomeTitle.textContent = "Welcome, Parent!";
+  }
+  if(selectedRole=="admin"){
+     welcomeTitle.textContent = "Welcome, Admin!";
+  }
+  if(selectedRole=="teacher"){
+     welcomeTitle.textContent = "Welcome, Teacher!";
+  }
+})
+loginForm.addEventListener("submit", function (e) {
+  e.preventDefault(); 
+
+
+
+  if (role.value === "") {
+    message.textContent = "Please choose a role first";
+    message.classList.add("error");
+    return;
+  }
+   else if (loginEmail.value === "" || loginPassword.value === "") {
+    message.textContent = "Please fill in email and password";
+    message.classList.add("error");
+    return;
+  }
+    else if (
+    (role.value === "student" || role.value === "parent") &&
+    (studentID.value === "" || classCode.value === "")
+  ) {
+    message.textContent = "Please enter Student ID and Class Code";
+    message.classList.add("error");
+    return;
+  }
+  else{
+    message.textContent = "Login successful!";
+  message.classList.add("success");
+  loginForm.reset();
+  disableInputs();
+  addHideField();
+
+  
+}
+
 });
-passInput.addEventListener("invalid", () => {
-    passInput.setCustomValidity("تم تغييرها");
-});
-

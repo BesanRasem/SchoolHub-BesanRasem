@@ -168,16 +168,6 @@ body {
   margin: 5px;
 }
 
-.login-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(120, 250, 94, 0.582);
-  margin: 100px;
-  border-radius: 15px;
-}
-
 .school-cards {
   display: flex;
   gap: 20px;
@@ -213,6 +203,26 @@ body {
 
 .stars {
   color: gold;
+}
+
+.login-card {
+  background-color: rgba(120, 250, 94, 0.582);
+}
+
+.hide-field {
+  display: none;
+}
+
+.form-message {
+  font-size: 14px;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: rgb(167, 48, 236);
 }
 
 @media (max-width: 1024px) {
