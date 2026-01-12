@@ -97,7 +97,6 @@ role.addEventListener("change", function () {
 function getData(email,password) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const success = true;
 
       if (email==""||password=="") {
                reject("Enter password and email");
