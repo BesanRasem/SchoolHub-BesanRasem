@@ -60,7 +60,7 @@ role.addEventListener("change", function () {
      welcomeTitle.textContent = "Welcome, Teacher!";
   }
 })
-/*loginForm.addEventListener("submit", function (e) {
+ loginForm.addEventListener("submit", function (e) {
   e.preventDefault(); 
 
 
@@ -93,7 +93,8 @@ role.addEventListener("change", function () {
   
 }
 
-});*/
+});
+/*
 function getData(email,password) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -131,3 +132,4 @@ loginForm.addEventListener("submit", async function (e) {
     message.classList.add("error");
   }
 });
+*/
