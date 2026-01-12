@@ -225,6 +225,14 @@ body {
   color: rgb(167, 48, 236);
 }
 
+.form-title {
+  color: rgb(167, 48, 236);
+}
+
+#welcomeTitle {
+  color: rgb(167, 48, 236);
+}
+
 @media (max-width: 1024px) {
   .hero {
     flex-direction: column;

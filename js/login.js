@@ -60,7 +60,7 @@ role.addEventListener("change", function () {
      welcomeTitle.textContent = "Welcome, Teacher!";
   }
 })
-loginForm.addEventListener("submit", function (e) {
+/*loginForm.addEventListener("submit", function (e) {
   e.preventDefault(); 
 
 
@@ -93,4 +93,42 @@ loginForm.addEventListener("submit", function (e) {
   
 }
 
+});*/
+function getData(email,password) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const success = true;
+
+      if (email==""||password=="") {
+               reject("Enter password and email");
+      } else {
+        resolve("login success");
+      }
+    }, 2000);
+  });}
+  async function loadData() {
+  try {
+    const result = await getData();
+    console.log(result);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+loginForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  try {
+    const result = await getData(
+      loginEmail.value,
+      loginPassword.value
+    );
+
+    message.textContent = result;
+    message.classList.add("success");
+
+  } catch (error) {
+    message.textContent = error;
+    message.classList.add("error");
+  }
 });
