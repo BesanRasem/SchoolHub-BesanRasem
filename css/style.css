@@ -233,6 +233,20 @@ body {
   color: rgb(167, 48, 236);
 }
 
+.homework-page {
+  color: rgb(167, 48, 236);
+}
+.homework-page .homework-card {
+  background-color: rgba(120, 250, 94, 0.582);
+}
+.homework-page h5 {
+  color: rgb(167, 48, 236);
+}
+
+.card {
+  background-color: rgba(120, 250, 94, 0.582);
+}
+
 @media (max-width: 1024px) {
   .hero {
     flex-direction: column;

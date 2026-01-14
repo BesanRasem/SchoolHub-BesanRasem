@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Homework</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Indie+Flower&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <title>HomeWork Page</title>
+</head>
+
+<body class="homework-page">
+
+  <div class="container my-3 ">
+
+    <h2 class="mb-5 fw-bold">Homework</h2>
+
+    <div class="row  mb-3">
+      <div class="col-md-8 mb-2">
+        <select class="form-select">
+          <option selected>All Subjects</option>
+          <option>Math</option>
+          <option>English</option>
+          <option>Science</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 text-md-end">
+        <button id="loadHomeworkBtn" class="btn btn-primary btn-lg ">
+          Load Homework
+        </button>
+      </div>
+    </div>
+
+    <div id="feedback" class="alert alert-info">
+      Press "Load Homework" to see your assignments
+    </div>
+   <div id="homeworkList" class="row g-3"></div>
+
+
+   <!-- <div class="row g-3">
+
+      <div class="col-md-6">
+        <div class="card shadow homework-card ">
+          <div class="card-body">
+
+            <div class="d-flex justify-content-between mb-2">
+              <h5 class="mb-0 fw-bold">Math</h5>
+              <span class="badge bg-warning ">Pending</span>
+            </div>
+
+            <p class="fw-bold">
+              Solve chapter 3 exercises
+            </p>
+
+            <p class="text-muted mb-2">
+              Due: 20 Jan 2026
+            </p>
+
+            <div class="alert alert-light mb-2">
+               No feedback yet
+            </div>
+            <button class="btn btn-outline-primary" > Upload Your Homework</button>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card shadow homework-card">
+          <div class="card-body">
+
+            <div class="d-flex justify-content-between mb-2">
+              <h5 class="mb-0 fw-bold">English</h5>
+              <span class="badge bg-success">Completed</span>
+            </div>
+
+            <p class="fw-bold">
+              Write a short essay
+            </p>
+
+            <p class="text-muted mb-2">
+              Due: 18 Jan 2026
+            </p>
+
+        
+
+            <div class="alert alert-light mb-3">
+               Great work! Very well written.
+            </div>
+            <p class="mb-2">
+              <span class="fw-bold">Grade:</span> 90 / 100
+            </p>
+
+          </div>
+        </div>
+      </div>
+
+    </div> -->
+
+  </div>
+
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+     <script src="js/homeWorkPage.js"></script></body>
+</html>

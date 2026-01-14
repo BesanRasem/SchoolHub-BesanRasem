@@ -217,3 +217,16 @@ height: 200px;
 #welcomeTitle{
   color: $color-text;
 }
+
+.homework-page{
+    color:$color-text;
+    .homework-card{
+        background-color: $color-bg;
+    }
+    h5{
+      color: $color-text;
+    }
+}
+.card{
+  background-color: $color-bg;
+}
