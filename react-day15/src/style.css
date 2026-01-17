@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Indie+Flower&family=Roboto:ital,wght@0,100..900;1,100..900&family=Short+Stack&display=swap');
+body {
+background:url(https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg);
+color: rgb(167, 48, 236);
+  font-family: "Baloo 2", cursive;
+
+
+}
+
+
+.homework-card {
+  border-radius: 20px;
+  padding: 10px;
+  background-color: rgba(120, 250, 94, 0.582);
+  color: rgb(167, 48, 236);
+
+}
+.btn-outline-primary{
+  color:rgb(167, 48, 236) ;
+  border-color: rgb(167, 48, 236);
+  font-weight: bold;
+
+}
+.btn-outline-primary:hover{
+  color: rgb(245, 242, 242);
+  background-color: rgb(167, 48, 236);
+  border-color: rgb(167, 48, 236);
+
+}
+.btn-outline-primary:active{
+  color: rgb(245, 242, 242);
+  background-color:rgb(167, 48, 236);
+  border-color: rgb(167, 48, 236);
+
+}
+.form-select{
+  margin-right: 40px;
+}
