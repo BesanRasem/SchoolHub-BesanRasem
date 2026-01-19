@@ -6,18 +6,18 @@
 }
 
 body{
-  background: url(https://i.pinimg.com/1200x/55/c2/45/55c24590c7b5ba3f4fdb521e8d343ece.jpg);
+  background: url(https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   
   
-     color:#4b5488 ;
+     color:rgb(167, 48, 236) ;
 
 }
 .card{
-  background-color:rgba(150, 194, 236, 0.596) ;
-   color:#4b5488;
+  background-color:rgba(120, 250, 94, 0.582) ;
+   color:rgb(167, 48, 236);
    padding: 20px;
    border-radius: 5px;
    margin: 10px;
@@ -34,24 +34,22 @@ body{
 input{
   padding: 5px;
   margin: 5px;
-  background-color:rgba(150, 194, 236, 0.596) ;
+  background-color:rgba(120, 250, 94, 0.582);
   border-radius: 5px;
-  color:#4b5488 ;
+  color:rgb(167, 48, 236) ;
   border: none;
 }
 
 .btn-primary{
-  background-color: #4b5488;
-  color: white;
-  
+  background-color: rgba(120, 250, 94, 0.582);
+  color:rgb(167, 48, 236)  ;
   border: none;
   margin-right: 5px;
   font-weight: bold;
 }
 .btn-primary:hover{
-  background-color: rgba(150, 194, 236, 0.158);
-  color: #4b5488;
-  border:solid 2px #4b5488 ;
-  
+  background-color:rgb(167, 48, 236) ;
+  border: none;
+  color: white;
 }
 
