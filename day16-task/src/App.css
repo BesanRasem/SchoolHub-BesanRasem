@@ -1,0 +1,57 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+body{
+  background: url(https://i.pinimg.com/1200x/55/c2/45/55c24590c7b5ba3f4fdb521e8d343ece.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  
+  
+     color:#4b5488 ;
+
+}
+.card{
+  background-color:rgba(150, 194, 236, 0.596) ;
+   color:#4b5488;
+   padding: 20px;
+   border-radius: 5px;
+   margin: 10px;
+   p{
+    font-weight: bold;
+   }
+  
+}
+.inputs{
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+}
+input{
+  padding: 5px;
+  margin: 5px;
+  background-color:rgba(150, 194, 236, 0.596) ;
+  border-radius: 5px;
+  color:#4b5488 ;
+  border: none;
+}
+
+.btn-primary{
+  background-color: #4b5488;
+  color: white;
+  
+  border: none;
+  margin-right: 5px;
+  font-weight: bold;
+}
+.btn-primary:hover{
+  background-color: rgba(150, 194, 236, 0.596);
+  color: #4b5488;
+  
+  border: none;
+}
+
