@@ -1,22 +1,36 @@
 import './App.css';
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 
 function App() {
+     const [products, setProducts] = useState([]);
      useEffect(() => {
-  fetch("https://dummyjson.com/products")
-    .then(res => res.json())
-    .then(data => console.log(data));
-     }, []);
+    fetch("https://dummyjson.com/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data.products); 
+      });
+  }, []);
+   
 
     return (
-        <h1>useEffect</h1>
+        <div style={{ padding: "20px" }}>
+          <h2>Products</h2>
+
+          {products.map((product) => (
+        <div  key={product.id} className="product-card" >
+            <p >Name:{product.title}</p>
+          <p >Price: ${product.price}</p>
+       </div>
+       ))}
+           </div>
+         );}
+          
+       
+    
 
 
   
 
-    );
-
-}
 
  
 
