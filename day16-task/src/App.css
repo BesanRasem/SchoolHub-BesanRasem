@@ -49,9 +49,9 @@ input{
   font-weight: bold;
 }
 .btn-primary:hover{
-  background-color: rgba(150, 194, 236, 0.596);
+  background-color: rgba(150, 194, 236, 0.158);
   color: #4b5488;
+  border:solid 2px #4b5488 ;
   
-  border: none;
 }
 
