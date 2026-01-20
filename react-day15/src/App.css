@@ -1,38 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Indie+Flower&family=Roboto:ital,wght@0,100..900;1,100..900&family=Short+Stack&display=swap');
-body {
-background:url(https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg);
-color: rgb(167, 48, 236);
-  font-family: "Baloo 2", cursive;
-
-
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-
-.homework-card {
-  border-radius: 20px;
-  padding: 10px;
-  background-color: rgba(120, 250, 94, 0.582);
-  color: rgb(167, 48, 236);
-
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
 }
-.btn-outline-primary{
-  color:rgb(167, 48, 236) ;
-  border-color: rgb(167, 48, 236);
-  font-weight: bold;
-
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
 }
-.btn-outline-primary:hover{
-  color: rgb(245, 242, 242);
-  background-color: rgb(167, 48, 236);
-  border-color: rgb(167, 48, 236);
-
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
-.btn-outline-primary:active{
-  color: rgb(245, 242, 242);
-  background-color:rgb(167, 48, 236);
-  border-color: rgb(167, 48, 236);
 
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.form-select{
-  margin-right: 40px;
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
 }
