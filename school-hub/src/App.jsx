@@ -1,9 +1,10 @@
-import HomeWork from "./component/HomeWork";
+import StudentDashboard from "./components/StudentDashboard";
+import SubjectPage from "./components/SubjectPage";
 import './App.css';
 
 
 function App() {
-  return <HomeWork />;
+  return <StudentDashboard />;
 }
 
 export default App;
