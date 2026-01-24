@@ -229,16 +229,26 @@ margin: 10px;
 .nav-link{
   color:rgb(167, 48, 236) ;
   font-weight: bold;
+   border-radius: 16px;
+  padding: 6px;
 }
 .nav-link:hover{
   background-color:rgb(167, 48, 236)  ;
   color: white;
-  border-radius: 16px;
-  padding: 6px;
+ 
 }
 .fa-bell{
   color:rgb(167, 48, 236)  ;
   font-size: large;
+}
+
+.schedule-item{
+  font-size: 12px;
+  
+}
+.schedual-card{
+  background-color:rgb(206, 248, 210) ;
+  border: 0.5px solid black;
 }
 
 

@@ -1,42 +1,43 @@
+import { NavLink } from "react-router-dom";
 
 function SideNav() {
     return (
         <div className=" SideNav d-flex flex-column"> 
             <ul className="  nav  flex-column mb-auto">
                 <li>
-                    <a href="#" className="nav-link mt-3 mb-3">Dashboard</a>
+                    <NavLink href="#" className="nav-link mt-3 mb-3">Dashboard</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3  ">Schedual</a>
+                    <NavLink href="#" className="nav-link mb-3  ">Schedual</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3 ">HomeWork</a>
+                    <NavLink href="#" className="nav-link mb-3 ">HomeWork</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3">My Exams</a>
+                    <NavLink href="#" className="nav-link mb-3">My Exams</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3 ">My Profile</a>
+                    <NavLink href="#" className="nav-link mb-3 ">My Profile</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3">Attendance</a>
+                    <NavLink href="#" className="nav-link mb-3">Attendance</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3">My Teacher</a>
+                    <NavLink href="#" className="nav-link mb-3">My Teacher</NavLink>
                 </li>
                 
                 <li>
-                    <a href="#" className="nav-link mb-3">Subject</a>
+                    <NavLink href="#" className="nav-link mb-3">Subject</NavLink>
                 </li>
                
                 <li>
-                    <a href="#" className="nav-link mb-3">Progress</a>
+                    <NavLink href="#" className="nav-link mb-3">Progress</NavLink>
                 </li>
             </ul>
         </div>
@@ -82,7 +83,7 @@ function Navbar(){
 }
 function Attendance() {
      return(
-        <div className="card dash-card attendance-card note-2" >
+        <div className="card dash-card attendance-card note-1" >
             <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
              <i className="fa-solid fa-paperclip clip"></i>
@@ -221,12 +222,28 @@ function Subjects() {
 
 function Schedule() {
   return(
-        <div className="card dash-card attendance-card note-1" >
+        <div className="card dash-card attendance-card note-2" >
             <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
              <i className="fa-solid fa-paperclip clip"></i>
               <h5 className="card-title">Schedual</h5>
               </div>
+              <div className="card schedual-card">
+                      <div className="schedule-item m-2">
+          <h6>Sport</h6>
+          <p>08:00 - 09:00</p>
+          
+        </div>
+        </div>
+        <div className="card schedual-card mt-2">
+
+        <div className="schedule-item m-2 ">
+          <h6>Chemistry</h6>
+          <p>10:00 - 11:00</p>
+        </div>
+        </div>
+
+        <a href="#" className="m-3">+ more</a>
              
          </div>
            </div>
@@ -246,11 +263,12 @@ function StudentDashboard() {
             <Progress/>
             <Profile/>
             <Exam/>
-            <Attendance/>
+            <Schedule/>
             <Teacher/>
           
             <HomeWork/>
-            <Schedule/>
+            <Attendance/>
+            
             <Subjects/>
         </div>
         </div>
