@@ -74,6 +74,7 @@ body {
   width: 200px;
  display: block;
   border-radius: 6px;
+  height: 100vh;
 }
 
 .logo{
@@ -205,7 +206,7 @@ margin: 10px;
 }
 
 
-@media(max-width:1024px){
+/*@media(max-width:1024px){
   .dashboard-grid{
   display: grid;
   grid-template-columns: repeat(2,1fr);
@@ -225,7 +226,7 @@ margin: 10px;
 }
 .SideNav{
   display: none!important;
-}}
+}}*/
 .nav-link{
   color:rgb(167, 48, 236) ;
   font-weight: bold;
@@ -250,5 +251,19 @@ margin: 10px;
   background-color:rgb(206, 248, 210) ;
   border: 0.5px solid black;
 }
+ .progress-bar-lessons{
+  width: 75%;
+ background-color: rgb(9, 185, 9);
+ }
+ .progress-bar-attendance{
+  width: 5%;
+ background-color: rgb(241, 174, 30);
+ }
+.progress-bar-assigment{
+    width: 50%;
+ background-color: rgb(9, 185, 9);
+}
 
-
+.calender-erea{
+  background-color: rgba(120, 250, 94, 0.582);
+}

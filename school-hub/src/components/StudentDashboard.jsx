@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 
+
 function SideNav() {
     return (
         <div className=" SideNav d-flex flex-column"> 
@@ -111,56 +112,7 @@ function Profile() {
            </div>
         );
 }
-function Exam() {
-     return(
-        <div className="card dash-card exams-card note-3" >
-            <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-             <i className="fa-solid fa-paperclip clip"></i>
-              <h5 className="card-title">My exams</h5>
-              </div>
-              <div className="card mb-2 d-flex flex-row justify-content-between exam-card ">
-                <div>
-                  <h6 className="ms-2"> Chemistry</h6>
-                  
-                    <ul className="exam-detail d-flex gap-5">
-                      <li>10 question</li>
-                      <li>15 min</li>
-                    </ul>
-                  
-                </div>
-              </div>
-              <div className="card  mb-2 d-flex flex-row justify-content-between exam-card ">
-                <div>
-                  <h6 className="ms-2"> Math</h6>
-                  
-                    <ul className="exam-detail d-flex gap-5">
-                      <li>10 question</li>
-                      <li>15 min</li>
-                    </ul>
-                  
-                </div>
-              </div>
-              <a href="#" className="ms-3">+more</a>
 
-             
-         </div>
-           </div>
-        );
-}
-function Teacher() {
-     return(
-        <div className="card dash-card teacher-card note-3" >
-            <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-             <i className="fa-solid fa-paperclip clip"></i>
-              <h5 className="card-title" >My Teacher</h5>
-              </div>
-             
-         </div>
-           </div>
-        );
-}
 function HomeWork(){
     return(
         <div className="card dash-card homeworks-card note-1" >
@@ -203,76 +155,111 @@ function HomeWork(){
            </div>
         );
 }
-function Subjects() {
-  
- return(
-        <div className="card note-3 dash-card subject-card" >
-            <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3">
+
+
+function CompletedLessons(){
+    return(
+<div>
+    <div className="card dash-card CompletedLessons-card note-2">
+        <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
              <i className="fa-solid fa-paperclip clip"></i>
-              <h5 className="card-title">Subject</h5>
+              <h5 className="card-title">Completed Lessons</h5>
               </div>
-             
-         </div>
-           </div>
-        );
+                     <h3 className="my-2">75%</h3>
+                     <div className="progress">
+                     <div className="progress-bar progress-bar-lessons "
+                     aria-valuenow={75}
+                     aria-valuemin={0}
+                     aria-valuemax={100}>
+                     </div>
+                     </div>
+
+
+        </div>
+    </div>
+</div>);
 }
-
-
-
-function Schedule() {
-  return(
-        <div className="card dash-card attendance-card note-2" >
-            <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3">
+function AttendanceRate(){
+       return(
+<div>
+    <div className="card dash-card CompletedLessons-card note-3">
+        <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
              <i className="fa-solid fa-paperclip clip"></i>
-              <h5 className="card-title">Schedual</h5>
+              <h5 className="card-title">Attendance Rate</h5>
               </div>
-              <div className="card schedual-card">
-                      <div className="schedule-item m-2">
-          <h6>Sport</h6>
-          <p>08:00 - 09:00</p>
-          
-        </div>
-        </div>
-        <div className="card schedual-card mt-2">
+                     <h3 className="my-2">5%</h3>
+                     <div className="progress">
+                     <div className="progress-bar progress-bar-attendance  "
+                     aria-valuenow={95}
+                     aria-valuemin={0}
+                     aria-valuemax={100}>
+                     </div>
+                     </div>
 
-        <div className="schedule-item m-2 ">
-          <h6>Chemistry</h6>
-          <p>10:00 - 11:00</p>
-        </div>
-        </div>
 
-        <a href="#" className="m-3">+ more</a>
-             
-         </div>
-           </div>
-        );
+        </div>
+    </div>
+</div>);
 }
+function PendingAssignments(){
+       return(
+<div>
+    <div className="card dash-card CompletedLessons-card note-1">
+        <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+             <i className="fa-solid fa-paperclip clip"></i>
+              <h5 className="card-title">Pending Assignments</h5>
+              </div>
+                     <h3 className="my-2">4</h3>
+                     <div className="progress">
+                     <div className="progress-bar  progress-bar-assigment   "
+                     aria-valuenow={4}
+                     aria-valuemin={0}
+                     aria-valuemax={8}>
+                     </div>
+                     </div>
 
+
+        </div>
+    </div>
+</div>);
+}
 
 
 function StudentDashboard() {
     return (
-        <div>
-        <Navbar/>
-        <div className="container mt-3">
         <div className="d-flex">
-        <SideNav />
-        <div className=" container dashboard-grid ">
-            <Progress/>
-            <Profile/>
-            <Exam/>
-            <Schedule/>
-            <Teacher/>
+            <div>
+                <SideNav/>
+            </div>
+            <div className="container mt-3">
+            <div className="row gap-3">
+            <div className="col-md-3">
+                <CompletedLessons/>
+                
+            </div>
+             <div className="col-md-3">
+                <PendingAssignments/>
+                
+            </div>
+             <div className="col-md-3">
+                <AttendanceRate/>
+                
+            </div>
+           
+            </div>
           
-            <HomeWork/>
-            <Attendance/>
+
+            </div>
+             
+                <div className="calender-erea">
+                    <h5>Calender</h5>
+                </div>
             
-            <Subjects/>
-        </div>
-        </div>
-        </div>
+
+            
         </div>
     );
 }

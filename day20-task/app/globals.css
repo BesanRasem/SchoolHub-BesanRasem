@@ -1,0 +1,239 @@
+body {
+  background-image: url("/images/background.jpg");
+  background-size: cover;
+  background-position: center;
+  color: rgb(167, 48, 236);
+  font-family: 'Baloo 2', cursive !important;
+}
+
+.hero{
+  background-color: rgba(255, 255, 255, 0.692);
+}
+.hero-image {
+  position: relative;
+  width: 400px;
+  height: 350px;
+}
+
+.hero-img {
+  object-fit: contain;
+}
+.navbar {
+  background-color: rgba(120, 250, 94, 0.582);
+  color:rgb(167, 48, 236);
+  font-weight: bold;
+
+  .navbar-brand {
+    font-weight: bold;
+      color: rgb(167, 48, 236);
+
+
+    &:hover {
+      color: rgb(167, 48, 236);
+      cursor: default;
+      
+    }
+  }
+
+  .nav-link {
+      color: rgb(167, 48, 236);
+
+
+    &:hover {
+      background-color: rgb(167, 48, 236);
+      color:white;
+      border-radius: 7px;
+    }
+    &:active   {
+         background-color: rgb(167, 48, 236) ;
+      color: white ;
+      border-radius: 7px ;
+    }
+  }
+}
+.btn-outline-primary{
+  color: rgb(167, 48, 236) !important;
+  border-color: rgb(167, 48, 236) !important;
+  font-weight: bold !important;
+
+}
+.btn-outline-primary:hover{
+  color: white !important;
+  background-color: rgb(167, 48, 236) !important;
+  border-color: rgb(167, 48, 236) !important;
+
+}
+.btn-outline-primary:active{
+  color: white !important;
+  background-color: rgb(167, 48, 236) !important;
+  border-color: rgb(167, 48, 236) !important;}
+
+.btn-primary{
+  background-color:rgba(120, 250, 94, 0.582)!important;
+  color: rgb(167, 48, 236)!important;
+  border: none !important;
+  margin-right: 5px !important;
+  font-weight: bold !important;
+}
+.btn-primary:hover{
+  background-color: rgb(167, 48, 236) !important;
+  border: none !important;
+  color: white!important;
+}
+.footer {
+  background-color: rgba(240, 255, 236, 0.993); 
+  color: #cbd5e1;
+}
+
+.footer-brand {
+  font-size: 20x;
+  font-weight: bold;
+  color: rgb(167, 48, 236);
+}
+
+.footer-title {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: rgb(167, 48, 236);
+}
+
+.footer-text {
+  font-size: 15px;
+  color: black;
+  font-weight: bold;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+.footer-links a:hover {
+  color: #38bdf8;
+}
+
+
+
+.footer-bottom {
+  font-size:15px;
+  color: #888e96;
+  padding-bottom: 2px;
+}
+
+
+
+
+
+
+.title {
+  font-size: 50px;
+  font-weight:bold;
+  color: rgb(167, 48, 236);
+}
+.feature-title{
+    font-size: 35px;
+  font-weight:bold;
+  color: rgb(167, 48, 236);
+
+}
+.subtitle {
+  font-size: 30px;
+  color: rgb(167, 48, 236);
+}
+
+.about-heading {
+  font-size: 30px;
+  font-weight: bold;
+  color: rgb(167, 48, 236);
+}
+
+.about-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #0b0c0c;
+}
+
+.about-card {
+  background: rgba(164, 201, 250, 0.733);
+  padding:10px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+
+.stat-number {
+  font-size: 40px;
+  font-weight: 700;
+  color: rgb(167, 48, 236);
+}
+
+.stat-label {
+  font-size:20px;
+  color: black;
+}
+
+.clip{
+  font-size:50px ;
+  color:rgb(109, 107, 247) ;
+  padding: 10px;
+}
+.contact-card{
+  padding: 20px;
+  border: 16px;
+  background-color: rgba(164, 201, 250, 0.733)!important;
+}
+.form-label{color:rgb(167, 48, 236) ;
+font-weight: bold;}
+.service-heading {
+  color:rgb(167, 48, 236);
+  font-weight: bold;
+}
+
+.note-1 {
+  background: rgba(250, 157, 214, 0.897)!important;
+  transform: rotate(-2deg);
+}
+
+.note-2 {
+  background: rgba(182, 247, 187, 0.952)!important;
+  transform: rotate(1.5deg);
+}
+
+.note-3 {
+  background: #bbdefbea !important;
+  transform: rotate(-1deg);
+}
+.service-card{
+  border-radius: 16px;
+  border: none;
+   transition: transform 0.3s ease;
+}
+.service-text{
+  font-weight: bold;
+}
+.about-text{
+  font-weight: bold;
+}
+.feature-card {
+  background-color: rgba(120, 250, 94, 0.582);
+  border-radius: 16px;
+   padding: 20px;
+  
+
+}
+.footer-text-email {
+  color: blue;
+
+}
+.service-card:hover{
+   
+  transform: scale(1.05);
+
+ 
+}
