@@ -1,0 +1,44 @@
+body{
+    background-image: url("https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg");
+  background-size: cover;
+  background-position: center;
+  color: rgb(167, 48, 236);
+  font-family: 'Baloo 2', cursive !important;
+  margin: 0px;
+}
+.navbar {
+  background-color: rgba(120, 250, 94, 0.582);
+  color:rgb(167, 48, 236);
+  font-weight: bold;
+  padding: 10px;
+
+  .navbar-brand {
+    font-weight: bold;
+      color: rgb(167, 48, 236);
+      text-decoration: none;
+      font-size: larger;
+
+
+    &:hover {
+      color: rgb(167, 48, 236);
+      cursor: default;
+      
+    }
+  }
+
+}
+  .btn-primary{
+  background-color:rgba(120, 250, 94, 0.582)!important;
+  color: rgb(167, 48, 236)!important;
+  border: none !important;
+  margin-right: 5px !important;
+  font-weight: bold !important;
+}
+.btn-primary:hover{
+  background-color: rgb(167, 48, 236)!important;
+  border: none!important;
+  color: white !important;
+}
+.page-text{
+  color:rgb(167, 48, 236) ;
+}
