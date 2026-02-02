@@ -273,3 +273,51 @@ link{
   background-color: green !important;
   color: white;
 }
+.homework-page {
+  color: rgb(167, 48, 236);
+  font-weight: bold;
+
+}
+
+.dash-card { border-radius: 20px; border: none; transition: transform 0.3s ease;}
+
+
+.homework-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color:rgba(120, 250, 94, 0.582) ;
+
+}
+  
+
+.homework-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.homework-card h5 {
+  color: rgb(167, 48, 236);
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: rgb(167, 48, 236);
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background-color: rgb(140, 30, 210);
+}
+
+.btn-outline-primary {
+  color: rgb(167, 48, 236);
+  border-color: rgb(167, 48, 236);
+  font-weight: bold;
+}
+
+.btn-outline-primary:hover {
+  background-color: rgb(167, 48, 236);
+  color: white;
+  border-color: rgb(167, 48, 236);
+}
