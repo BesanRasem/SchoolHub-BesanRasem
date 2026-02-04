@@ -1,0 +1,48 @@
+body{
+  background-color: white;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.card-image img {
+  width: 100%;         
+  height: 150px;       
+  object-fit: contain; 
+  display: block;
+  background: whitesmoke; 
+  border-radius: 16px ;
+  padding: 8px;       
+ 
+}
+.card-image{
+  margin: 5px;
+  margin-right: 15px;
+}
+
+
+.card-content {
+  padding: 10px;
+}
+
+.card-content h3 {
+  margin: 8px ;
+  font-size: 18px;
+  color:rgb(17, 73, 17) ;
+}
+h1{
+  color: rgb(17, 73, 17);
+}
+
+
