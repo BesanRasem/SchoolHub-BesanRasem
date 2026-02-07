@@ -15,7 +15,7 @@ function CalendarBox({ holidays }: { holidays: string[] }) {
   const [startDate, setStartDate] = useState(new Date());
     function Holiday(date: Date) {
     const d = date.toLocaleDateString("en-CA");  
-    return holidays.includes(d) ? "holiday" : undefined; 
+    return holidays.includes(d) ? "holiday" : ""; 
    
   }
 
@@ -24,8 +24,7 @@ function CalendarBox({ holidays }: { holidays: string[] }) {
       <h5 className="mb-2">Calendar</h5>
       <DatePicker
         selected={startDate}
-        onChange={(date) => setStartDate(date)}
-        inline
+        inline={true}
         dayClassName={Holiday}
       />
     </div>
