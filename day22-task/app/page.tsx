@@ -1,65 +1,238 @@
-import Image from "next/image";
+"use client"
+import Link from "next/link";
+import { Chart } from "react-google-charts";
+import  { useState,useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function Home() {
+
+
+
+
+function CalendarBox({ holidays }: { holidays: string[] }) {
+    
+  const [startDate, setStartDate] = useState(new Date());
+    function Holiday(date: Date) {
+    const d = date.toLocaleDateString("en-CA");  
+    return holidays.includes(d) ? "holiday" : undefined; 
+   
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="calendar-box">
+      <h5 className="mb-2">Calendar</h5>
+      <DatePicker
+        selected={startDate}
+        onChange={(date) => setStartDate(date)}
+        inline
+        dayClassName={Holiday}
+      />
     </div>
   );
 }
+
+
+const data =  [
+    ["Test", "Math", "Physics", "English", "Science"],
+    ["Test 1", 30, 70, 90 , 0],
+    ["Test 2", 85, 55, 44 ,3] , 
+    ["Test 3", 4, 80, 92,40],
+    ["Test 4", 95, 100, 94,30],
+  ];
+
+const options ={
+    title: "Student Progress Over Time",
+    hAxis: {
+      title: "Tests",
+    },
+    vAxis: {
+      title: "Score",
+      minValue: 0,
+      maxValue: 100,
+    },
+    colors: ["#4e73df", "#1cc88a", "#f6c23e","#f63ea9"], 
+    curveType: "function", 
+    pointSize: 5, 
+    legend: { position: "bottom"} ,
+    backgroundColor:"#ced8f8b0",
+      chartArea: {
+    width: "85%",
+    height: "70%",
+  },
+    
+  };
+ 
+
+function SideNav() {
+  return (
+    <aside className="SideNav">
+      <h4 className="sidenav-title">School Hub</h4>
+
+      <ul className="sidenav-list">
+        <li><Link href="#" className="sidenav-link active"><i className="fa-solid fa-house"></i> Dashboard</Link></li>
+        <li><Link href="#" className="sidenav-link"><i className="fa-solid fa-calendar-days"></i> Schedule</Link></li>
+        <li><Link href="#" className="sidenav-link"><i className="fa-solid fa-book"></i> Homework</Link></li>
+        <li><Link href="#" className="sidenav-link"><i className="fa-solid fa-file-lines"></i> Exams</Link></li>
+        <li><Link href="#" className="sidenav-link"><i className="fa-solid fa-user"></i> Profile</Link></li>
+        <li><Link href="#" className="sidenav-link"><i className="fa-solid fa-chart-line"></i> Progress</Link></li>
+      </ul>
+    </aside>
+  );
+}
+    function CompletedLessons(){
+    return(
+<div>
+    <div className="card dash-card CompletedLessons-card note-2">
+        <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+             <i className="fa-solid fa-paperclip clip"></i>
+              <h5 className="card-title">Completed Lessons</h5>
+              </div>
+                     <h3 className="my-2">75%</h3>
+                     <div className="progress">
+                     <div className="progress-bar progress-bar-lessons "
+                     aria-valuenow={75}
+                     aria-valuemin={0}
+                     aria-valuemax={100}>
+                     </div>
+                     </div>
+
+
+        </div>
+    </div>
+</div>);
+}
+function PendingAssignments(){
+       return(
+<div>
+    <div className="card dash-card CompletedLessons-card note-1">
+        <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+             <i className="fa-solid fa-paperclip clip"></i>
+              <h5 className="card-title">Pending Assignments</h5>
+              </div>
+                     <h3 className="my-2">4</h3>
+                     <div className="progress">
+                     <div className="progress-bar  progress-bar-assigment   "
+                     aria-valuenow={4}
+                     aria-valuemin={0}
+                     aria-valuemax={8}>
+                     </div>
+                     </div>
+
+
+        </div>
+    </div>
+</div>);
+}
+function AttendanceRate(){
+       return(
+<div>
+    <div className="card dash-card CompletedLessons-card note-3">
+        <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+             <i className="fa-solid fa-paperclip clip"></i>
+              <h5 className="card-title">Attendance Rate</h5>
+              </div>
+                     <h3 className="my-2">5%</h3>
+                     <div className="progress">
+                     <div className="progress-bar progress-bar-attendance  "
+                     aria-valuenow={95}
+                     aria-valuemin={0}
+                     aria-valuemax={100}>
+                     </div>
+                     </div>
+
+
+        </div>
+    </div>
+</div>);
+}
+export default function Dashbourd() {
+     const [holidays, setHolidays] = useState([]);
+
+  useEffect(() => {
+      const url = process.env.NEXT_PUBLIC_HOLIDAYS_API_URL;
+
+  if (!url) {
+    console.error("HOLIDAYS API URL is not defined");
+    return;
+  }
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      setHolidays(data.holidays);
+    });
+}, []);
+
+
+
+
+  return (
+    <div className="d-flex">
+
+      <SideNav />
+
+      <div className="container-fluid mt-3">
+        <div className="row g-3">
+
+          <div className="col-md-9">
+            <div className="row g-3">
+
+              <div className="col-md-4">
+                <CompletedLessons />
+              </div>
+
+              <div className="col-md-4">
+                <PendingAssignments />
+              </div>
+
+              <div className="col-md-4">
+                <AttendanceRate />
+              </div>
+
+              <div className="col-12">
+                <div className="card dash-card mt-3">
+                  <div className="card-body">
+
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <i className="fa-solid fa-paperclip clip"></i>
+                      <h5 className="card-title">Grade Chart</h5>
+                    </div>
+
+                    <Chart
+                      chartType="LineChart"
+                      width="100%"
+                      height="350px"
+                      data={data}
+                      options={options}
+                    />
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="col-md-3">
+            <div className="card dash-card note-5 h-100">
+            <div className="card-body">
+             <div className="d-flex justify-content-between align-items-center mb-3">
+                      <i className="fa-solid fa-paperclip clip"></i>
+                      <h5 className="card-title">Calendar</h5>
+                    </div>
+
+    <CalendarBox holidays={holidays} />
+  </div>
+</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  );
+}
+

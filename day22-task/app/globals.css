@@ -293,4 +293,5 @@ margin: 10px;
 .react-datepicker__day.holiday {
   background-color: green !important;
   color: white;
+  border-radius: 6px;
 }
