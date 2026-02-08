@@ -1,5 +1,5 @@
 export async function GET(request) {
-    const limit = Number(process.env.LIMIT || 3);
+    const limit = Number(process.env.PRODUCTS_LIMIT || 3);
 
     const products = Array.from({length: 30}).map((_, i) => ({
             id: i + 1,

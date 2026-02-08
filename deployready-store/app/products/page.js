@@ -1,7 +1,7 @@
 async function getProducts() {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const res = await fetch(`${baseUrl}/api/products`,
-        {cash: "no-cache",});
+        {cach: "no-cache",});
 
     if (!res.ok) throw new Error("Failed to fetch products");
 
