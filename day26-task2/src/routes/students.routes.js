@@ -2,6 +2,8 @@ const express = require("express");
 const { body, param, query } = require("express-validator");
 const validate = require("../middlewares/validate");
 const Students = require("../controllers/students.controller");
+const auth = require("../middlewares/auth");
+
 
 const router = express.Router();
 
@@ -57,6 +59,7 @@ router.patch(
 );
 router.delete(
     "/:id",
+    auth,
     [param("id").isMongoId()],
     validate,
     Students.remove
