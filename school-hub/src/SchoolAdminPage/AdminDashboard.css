@@ -1,0 +1,112 @@
+/* ---------------- Body ---------------- */
+body {
+  font-family: 'Baloo 2', cursive !important;
+  background: url(https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg);
+  background-position: center;
+  background-size: cover;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ---------------- Navbar ---------------- */
+.navbar {
+  background-color: #a7fc9f;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.nav-brand {
+  font-weight: bold;
+  color: rgb(167, 48, 236);
+  font-size: 24px;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-link {
+  color: rgb(167, 48, 236);
+  font-weight: bold;
+  font-size: 16px;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover, .active-link {
+  background-color: rgb(167, 48, 236);
+  color: white !important;
+}
+
+/* ---------------- Dashboard Content ---------------- */
+.dashboard-container {
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* ---------------- Cards ---------------- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.dash-card, .lecture-card {
+  border-radius: 20px;
+  border: none;
+  background-color: rgba(120, 250, 94, 0.582);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dash-card:hover, .lecture-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.card-title {
+  font-weight: bold;
+  color: rgb(167, 48, 236);
+  margin-bottom: 15px;
+}
+
+/* ---------------- Buttons ---------------- */
+.btn-primary {
+  background-color: rgb(167, 48, 236);
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background-color: rgb(140, 30, 210);
+}
+
+.btn-outline-primary {
+  color: rgb(167, 48, 236);
+  border-color: rgb(167, 48, 236);
+  font-weight: bold;
+}
+
+.btn-outline-primary:hover {
+  background-color: rgb(167, 48, 236);
+  color: white;
+  border-color: rgb(167, 48, 236);
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

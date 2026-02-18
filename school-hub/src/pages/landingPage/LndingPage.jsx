@@ -1,13 +1,39 @@
-
-import NavBar from "../../components/NavBar";
 import "./LandingPage.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import Footer from "../../components/Footer";
+
+import Login from"../loginPage/Login";
 
 
-
+ function Navbar(){
+    return(
+        <nav className="navbar navbar-expand-lg ">
+  <div className="container-fluid">
+    <div className="brand-image d-flex flex-column "> 
+      <img
+            src="/images/logo-img.png"
+            alt="logo image"
+          />
+          <span className="nav-brand">school hub</span>
+          </div>
+    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span className="navbar-toggler-icon"></span>
+    </button>
+    <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div className="navbar-nav mx-auto">
+  <a className="nav-link active" href="#hero">Home</a>
+  <a className="nav-link" href="#about">About</a>
+  <a className="nav-link" href="#services">Services</a>
+  <a className="nav-link" href="#contact">Contact</a>
+</div>
+    </div>
+  </div>
+</nav>
+    );
+}
 
 
   export default function LandingPage() {
@@ -20,8 +46,8 @@ import { Link } from "react-router-dom";
   
   
     return(
-        <div>
-            <NavBar/>
+        <div className="hero-page">
+            <Navbar />
         
  <section className="hero" id="hero">
   <div className="hero-text ">
@@ -29,8 +55,9 @@ import { Link } from "react-router-dom";
     <p>Manage attendance, grades, and homework easily for students, parents, and teachers.</p>
     <div className="hero-button d-flex justify-content-center flex-wrap ">
       <a href="#" className="btn btn-primary btn-lg " >Register Your School</a>
-      <a href="login.html" className="btn btn-outline-primary btn-lg ">Login</a>
-    </div>
+     <Link to="/login" className="btn btn-outline-primary btn-lg">
+       Login
+       </Link>    </div>
   </div>
   <div className="hero-image" >
      <img
@@ -41,7 +68,7 @@ import { Link } from "react-router-dom";
 
   </div>
 </section>
-<section className="about-section py-5">
+<section className="about-section py-5" id="about">
   <div className="container">
     <div className="row align-items-center">
 
@@ -82,7 +109,7 @@ import { Link } from "react-router-dom";
   </div>
 </section>
 
-<section className="services-page py-5">
+<section className="services-page py-5" id="services">
       <div className="container">
 
        
@@ -94,7 +121,7 @@ import { Link } from "react-router-dom";
         
         <div className="row g-4">
           
-          <div className=" col-md-4 " >
+          <div className=" col-12 col-sm-6 col-md-6 col-lg-4 " >
             <div data-aos="flip-left">
             <div className="card note-3 service-card  text-center p-3" >
               <div className="d-flex justify-content-between mb-3">
@@ -108,7 +135,7 @@ import { Link } from "react-router-dom";
             </div>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-12 col-sm-6 col-md-6 col-lg-4">
              <div data-aos="flip-left">
             <div className="card note-1 service-card text-center p-3">
               <div className="d-flex justify-content-between mb-3">
@@ -122,7 +149,7 @@ import { Link } from "react-router-dom";
             </div>
           </div>
 
-          <div className="col-md-4 ">
+          <div className="col-12 col-sm-6 col-md-6 col-lg-4">
              <div data-aos="flip-left">
             <div className="card note-2 service-card text-center p-3">
               <div className="d-flex justify-content-between mb-3">
@@ -136,7 +163,7 @@ import { Link } from "react-router-dom";
             </div>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-12 col-sm-6 col-md-6 col-lg-4">
              <div data-aos="flip-left">
             <div className="card note-1 service-card text-center p-3">
               <div className="d-flex justify-content-between mb-3">
@@ -150,7 +177,7 @@ import { Link } from "react-router-dom";
             </div>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-12 col-sm-6 col-md-6 col-lg-4">
              <div data-aos="flip-left">
             <div className="card note-2 service-card text-center p-3">
               <div className="d-flex justify-content-between mb-3">
@@ -164,7 +191,7 @@ import { Link } from "react-router-dom";
             </div>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-12 col-sm-6 col-md-6 col-lg-4">
              <div data-aos="flip-left">
             <div className="card note-3 service-card h-100 text-center p-3">
               <div className="d-flex justify-content-between mb-3">
@@ -181,7 +208,7 @@ import { Link } from "react-router-dom";
 
       </div>
     </section>
-    <section className="contact-section">
+    <section className="contact-section" id="contact">
   <div className="container text-center">
     <h2>Have Questions?</h2>
     <p >
@@ -193,6 +220,7 @@ import { Link } from "react-router-dom";
     </Link>
   </div>
 </section>
+<Footer/>
 
 
     

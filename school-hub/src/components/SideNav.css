@@ -1,18 +1,11 @@
-
-body {
-  font-family: 'Baloo 2', cursive;
-  background: url(https://i.pinimg.com/1200x/7c/31/b5/7c31b5b84fd37bdfe195a0acc7115c03.jpg);
-  background-position: center;
-  width:  100%;
-  margin: 0;
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-  height: 100vh;
-    scroll-behavior: smooth;
-
-}
-section {
-  scroll-snap-align: start; 
+.SideNav {
+  width: 220px;
+  height: auto;
+  min-height: 100%;
+  background: #a7fc9f ;
+  border-radius: 20px;
+  padding: 20px 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .sidenav-title {
@@ -58,16 +51,4 @@ section {
 
 .sidenav-link.active i {
   color: white;
-}
-
-.SideNav {
-  width: 220px;
-  background: #a7fc9f ;
-  border-radius: 20px;
-  padding: 20px 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  min-height: 100vh;
-  position: sticky;
-
-
 }

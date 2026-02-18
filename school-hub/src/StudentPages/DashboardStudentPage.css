@@ -367,3 +367,7 @@ background-color: rgb(165, 165, 248);
   background-color: rgb(255, 112, 112);
    border-radius: 5px;
 }
+@media (min-width: 992px) {
+  .SideNavContainer {
+    display: flex;      
+  }}

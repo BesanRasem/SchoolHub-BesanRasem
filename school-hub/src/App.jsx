@@ -1,19 +1,29 @@
-import { Route,Routes } from "react-router-dom";
-import './App.css';
-import HomeworkStudentPage from "./StudentPages/HomeworkStudentPage";
-import ExamsStudentPage from "./StudentPages/ExamsStudentPage";
-import GradesStudentPage from "./StudentPages/GradesStudentPage";
-import SchedualStudentPage from "./StudentPages/SchedualStudentPage";
+import { Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/landingPage/LndingPage";
+import Login from "./pages/loginPage/Login";
+
 import DashbourdStudentPage from "./StudentPages/DashboardStudentPage";
+import AdminDashboard from "./SchoolAdminPage/AdminDashboard";
+import ProtectedRoute from "./ProtectedRoute";
+
+// لاحقاً تضيفي Teacher و Parent
 
 function App() {
   return (
-<Routes>
-  
-     <Route path="/" element={<DashbourdStudentPage />} />
-  
-</Routes>
+    <Routes>
+      <Route path="/" element={<AdminDashboard />} />
+      <Route path="/login" element={<Login />} />
+      <Route
+       path="/dashboard/student"
+       element={
+        <ProtectedRoute allowedRole="student">
+        <DashbourdStudentPage />
+         </ProtectedRoute>
+        }
+      />
+    
+
+    </Routes>
   );
 }
 

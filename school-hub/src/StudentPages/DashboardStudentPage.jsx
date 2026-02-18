@@ -5,6 +5,8 @@ import DatePicker from "react-datepicker";
 import './DashboardStudentPage.css';
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import SideNav from "../components/SideNav";
+
 
 function CalendarBox({activeType}) {
   const [startDate, setStartDate] = useState(new Date());
@@ -85,22 +87,6 @@ export async function getServerProps() {
   return { props: { holidays } };
 }
 
-function SideNav() {
-  return (
-    <aside className="SideNav">
-      <h4 className="sidenav-title">School Hub</h4>
-      <ul className="sidenav-list">
-        <li><Link to="#" className="sidenav-link active"><i className="fa-solid fa-house"></i> Dashboard</Link></li>
-        <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-calendar-days"></i> Schedule</Link></li>
-        <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-book"></i> Homework</Link></li>
-        <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-file-lines"></i> Exams</Link></li>
-        <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-user"></i> Profile</Link></li>
-        <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-chart-line"></i> Progress</Link></li>
-      </ul>
-    </aside>
-  );
-}
-
 function CompletedLessons(){
   return(
     <div>
@@ -173,36 +159,33 @@ function AttendanceRate(){
 export default function DashbourdStudentPage() {
 const [activeType, setActiveType] = useState(null);
 
+
  
 
   return (
-    <div className="d-flex">
+    <div className="SideNavContainer">
 
-      {/* SIDENAV */}
       <SideNav />
 
-      {/* CONTENT */}
       <div className="container-fluid mt-3">
         <div className="row g-3">
 
-          {/* LEFT SIDE */}
-          <div className="col-md-9">
+          <div className="col-12 col-xl-9">
             <div className="row g-3">
 
-              <div className="col-md-4">
+              <div className="col-12  col-md-4 ">
                 <CompletedLessons />
               </div>
 
-              <div className="col-md-4">
+              <div className="col-12  col-md-4">
                 <PendingAssignments />
               </div>
 
-              <div className="col-md-4">
+              <div className="col-12  col-md-4">
                 <AttendanceRate />
               </div>
 
-              {/* CHART */}
-              <div className="col-12">
+              <div className="col-12 ">
                 <div className="card dash-card mt-3">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -224,9 +207,8 @@ const [activeType, setActiveType] = useState(null);
             </div>
           </div>
 
-          {/* CALENDAR */}
-          <div className="col-md-3">
-            <div className="card dash-card note-5 h-100">
+          <div className="col-12 col-xl-3">
+            <div className="card dash-card note-5 h-100 d-flex flex-column justify-content-center align-items-center">
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <i className="fa-solid fa-paperclip clip"></i>
