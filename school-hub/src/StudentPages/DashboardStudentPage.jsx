@@ -186,7 +186,7 @@ const [activeType, setActiveType] = useState(null);
               </div>
 
               <div className="col-12 ">
-                <div className="card dash-card mt-3">
+                <div className="card dash-card note-4 mt-3">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <i className="fa-solid fa-paperclip clip"></i>

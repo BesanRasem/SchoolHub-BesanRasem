@@ -1,15 +1,15 @@
-h2{
-  color:rgb(167, 48, 236) ;
-  font-weight: bold;
-}
-.table-head th{
-  background-color:#a7fc9f ;
-  color: rgb(167, 48, 236);
-}
-.modal-title{
-  color:rgb(167, 48, 236) ;
-}
+.title{
+      color: rgb(167, 48, 236);
 
+}
+.badge{
+          background-color: rgb(48, 98, 236);
+          color:  white;
+
+}
+.card{
+    background-color:#a7fc9f  ;
+}
 .navbar {
    background-color:  #a7fc9f ;
   color:rgb(167, 48, 236);
@@ -53,4 +53,10 @@ border-radius: 16px;
   height: 40px;
   width: auto;
 }
-
+.Date{
+    max-width: 250px;
+}
+.head th{
+    background-color: #a7fc9f;
+    color: rgb(167, 48, 236);
+}

@@ -12,12 +12,9 @@ import Login from"../loginPage/Login";
     return(
         <nav className="navbar navbar-expand-lg ">
   <div className="container-fluid">
-    <div className="brand-image d-flex flex-column "> 
-      <img
-            src="/images/logo-img.png"
-            alt="logo image"
-          />
-          <span className="nav-brand">school hub</span>
+    <div className="d-flex align-items-center gap-2">
+            <img src="/images/logo-img.png" alt="logo" height="40" />
+            <span className="navbar-brand mb-0">School Hub</span>
           </div>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
@@ -54,7 +51,7 @@ import Login from"../loginPage/Login";
     <h1> Welcome to <span className="brand-name">SchoolHub</span>, your all-in-one school platform </h1>
     <p>Manage attendance, grades, and homework easily for students, parents, and teachers.</p>
     <div className="hero-button d-flex justify-content-center flex-wrap ">
-      <a href="#" className="btn btn-primary btn-lg " >Register Your School</a>
+      <Link to="/login" className="btn btn-primary btn-lg " state={{ activate: true }} >Activate Your Account</Link>
      <Link to="/login" className="btn btn-outline-primary btn-lg">
        Login
        </Link>    </div>

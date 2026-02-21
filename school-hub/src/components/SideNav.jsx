@@ -1,9 +1,28 @@
 import { Link } from "react-router-dom";
 import "./SideNav.css";
-
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 
 function SideNav() {
+  const { setAccessToken, setUser } = useAuth();
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+    const confirmed = window.confirm("are you sure");
+  if (!confirmed) return; 
+  try {
+    await api.post("/users/logout");
+
+    setAccessToken(null);
+    setUser(null);
+
+    navigate("/login");
+  } catch (err) {
+    alert("logout failed");
+  }
+};
   return (
     <div>
     <aside className="SideNav SideNav d-none d-lg-block h-100">
@@ -15,6 +34,14 @@ function SideNav() {
         <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-file-lines"></i> Exams</Link></li>
         <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-user"></i> Lessons</Link></li>
         <li><Link to="#" className="sidenav-link"><i className="fa-solid fa-chart-line"></i> Grades</Link></li>
+        <li>
+  <div className="sidenav-link logout-link logout" onClick={handleLogout}>
+    <i className="fa-solid fa-right-from-bracket logout"></i>
+    <span className="logout">Logout</span>
+  </div>
+</li>
+
+      
       </ul>
     </aside>
       <nav className="navbar navbar-expand-lg d-lg-none ">

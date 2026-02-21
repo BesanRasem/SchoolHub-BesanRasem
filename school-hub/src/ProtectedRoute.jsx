@@ -1,20 +1,20 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 
-function ProtectedRoute({ children, allowedRole }) {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+function ProtectedRoute({ allowedRole, children }) {
+  const { accessToken, user } = useAuth();
 
-  // إذا ما في توكن يرجع لصفحة الدخول
-  if (!token) {
-    return <Navigate to="/" />;
+  if (!accessToken) {
+    return <Navigate to="/login" replace />;
   }
 
-  // إذا الدور مش نفس المسموح
-  if (allowedRole && role !== allowedRole) {
-    return <Navigate to={`/dashboard/${role}`} />;
+  if (allowedRole && user?.role !== allowedRole) {
+    return <Navigate to={`/dashboard/${user?.role}`} replace />;
   }
 
-  return children;
+  if (children) return children;
+
+  return <Outlet />;
 }
 
 export default ProtectedRoute;
