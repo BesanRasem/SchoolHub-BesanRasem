@@ -253,10 +253,11 @@ link{
   width: 75% !important;
  background-color: rgb(9, 185, 9) !important;
  }
+ /*
  .progress-bar-attendance{
   width: 5% !important;
  background-color: rgb(241, 174, 30)!important;
- }
+ }*/
 .progress-bar-assigment{
     width: 50% !important;
  background-color: rgb(9, 185, 9) !important;

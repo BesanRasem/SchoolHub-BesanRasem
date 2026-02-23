@@ -1,4 +1,4 @@
-const mongoose = require("mongoose"); // 🔥 مهم جداً
+const mongoose = require("mongoose"); 
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -34,7 +34,9 @@ const userSchema = new mongoose.Schema({
   parentId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "User", 
-    default: null 
+     sparse: true,
+     default:null
+
   },
 
   parentPhone: { type: String, default: null },

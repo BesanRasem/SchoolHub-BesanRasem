@@ -10,23 +10,36 @@ function TeacherAttendancePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10; // عدد الطلاب لكل صفحة
+
   useEffect(() => {
     if (!classId) return;
-    fetchAttendance();
-  }, [classId, date]);
+    fetchAttendance(page);
+  }, [classId, date, page]);
 
-  const fetchAttendance = async () => {
+  const fetchAttendance = async (currentPage = 1) => {
     try {
       setLoading(true);
-      const res = await axios.get(`/attendance/${classId}?date=${date}`);
+      const res = await axios.get(
+        `/attendance/${classId}?date=${date}&page=${currentPage}&limit=${limit}`
+      );
 
       setStudents(res.data.students || []);
       setAttendance(res.data.attendance?.students || []);
+
+      // حساب الصفحات
+      const total = res.data.pagination?.total || (res.data.students?.length || 0);
+      setTotalPages(Math.ceil(total / limit));
     } catch (err) {
       console.error("Error fetching attendance:", err);
       setStudents([]);
       setAttendance([]);
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleStatusChange = (studentId, status) => {
@@ -43,15 +56,20 @@ function TeacherAttendancePage() {
     } catch (err) {
       console.error("Error saving attendance:", err);
       alert("Failed to save attendance. Please try again.");
-    } 
+    } finally {
+      setSaving(false);
+    }
   };
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
 
   return (
     <div className="container mt-4">
       <h3 className="fw-bold title">Attendance for Class</h3>
 
-      <div className="mb-3 Date" >
+      <div className="mb-3 Date">
         <label>Date:</label>
         <input
           type="date"
@@ -61,56 +79,87 @@ function TeacherAttendancePage() {
         />
       </div>
 
-      <table className="table table-bordered">
-        <thead>
-          <tr className="head">
-            <th>Student Name</th>
-            <th>Present</th>
-            <th>Absent</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.length === 0 ? (
-            <tr>
-              <td colSpan={3} className="text-center">No students in this class.</td>
-            </tr>
-          ) : (
-            students.map(student => {
-              const studentAttendance =
-                attendance.find(s => s.studentId === student._id) || { status: "absent" };
-              return (
-                <tr key={student._id}>
-                  <td>{student.name}</td>
-                  <td className="text-center">
-                    <input
-                      type="radio"
-                      name={`status-${student._id}`}
-                      checked={studentAttendance.status === "present"}
-                      onChange={() => handleStatusChange(student._id, "present")}
-                    />
-                  </td>
-                  <td className="text-center">
-                    <input
-                      type="radio"
-                      name={`status-${student._id}`}
-                      checked={studentAttendance.status === "absent"}
-                      onChange={() => handleStatusChange(student._id, "absent")}
-                    />
+      {loading ? (
+        <p className="text-center">Loading...</p>
+      ) : (
+        <>
+          <table className="table table-bordered">
+            <thead>
+              <tr className="head">
+                <th>Student Name</th>
+                <th>Present</th>
+                <th>Absent</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="text-center">
+                    No students in this class.
                   </td>
                 </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
+              ) : (
+                students.map(student => {
+                  const studentAttendance =
+                    attendance.find(s => s.studentId === student._id) || { status: "absent" };
+                  return (
+                    <tr key={student._id}>
+                      <td>{student.name}</td>
+                      <td className="text-center">
+                        <input
+                          type="radio"
+                          name={`status-${student._id}`}
+                          checked={studentAttendance.status === "present"}
+                          onChange={() => handleStatusChange(student._id, "present")}
+                        />
+                      </td>
+                      <td className="text-center">
+                        <input
+                          type="radio"
+                          name={`status-${student._id}`}
+                          checked={studentAttendance.status === "absent"}
+                          onChange={() => handleStatusChange(student._id, "absent")}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
 
-      <button
-        className="btn btn-primary"
-        onClick={saveAttendance}
-        
-      >
-       save
-      </button>
+          {/* ================= PAGINATION ================= */}
+          <div className="d-flex justify-content-between mt-3">
+            <button
+              disabled={page === 1}
+              className="btn btn-sm btn-secondary"
+              onClick={() => handlePageChange(page - 1)}
+            >
+              Prev
+            </button>
+
+            <span>
+              Page {page} of {totalPages}
+            </span>
+
+            <button
+              disabled={page === totalPages}
+              className="btn btn-sm btn-secondary"
+              onClick={() => handlePageChange(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+
+          <button
+            className="btn btn-primary mt-3"
+            onClick={saveAttendance}
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </>
+      )}
     </div>
   );
 }

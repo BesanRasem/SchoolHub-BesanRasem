@@ -17,6 +17,13 @@ import TeacherAttendancePage from "./TeacherPage/TeacherAttendancePage";
 import TeacherGradesPage from "./TeacherPage/TeacherGradesPage";
 import TeacherExamsPage from "./TeacherPage/TeacherExamsPage";
 import TeacherSchedulePage from "./TeacherPage/TeacherSchedulePage";
+import ExamsStudentPage from "./StudentPages/ExamsStudentPage";
+import SchedulStudentPage from "./StudentPages/SchedualStudentPage";
+import GradesStudentPage from "./StudentPages/GradesStudentPage";
+import HomeworkStudentPage from "./StudentPages/HomeworkStudentPage";
+import LessonsStudentPage from "./StudentPages/LessonsStudentPage";
+import SubjectDetailsPage from "./StudentPages/SubjectDetailsPage ";
+import TeacherLessonPage from "./TeacherPage/TeacherLessonPage";
 
 
 function App() {
@@ -26,7 +33,11 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
-
+       <Route path="/dashboard/student/exams" element={<ExamsStudentPage />} />
+       <Route path="/dashboard/student/schedule" element={<SchedulStudentPage />} />
+       <Route path="/dashboard/student/grades" element={<GradesStudentPage />} />
+       <Route path="/dashboard/student/homework" element={<HomeworkStudentPage />} />
+       <Route path="/dashboard/student/lessons" element={<LessonsStudentPage />} />
       <Route
         path="/dashboard/student"
         element={
@@ -35,6 +46,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/dashboard/student/subjects/:subjectId"
+  element={
+    <ProtectedRoute allowedRole="student">
+      <SubjectDetailsPage />
+    </ProtectedRoute>
+  }
+/>
 
     <Route path="/dashboard/schooladmin" element={<ProtectedRoute allowedRole="schooladmin" />}>
   <Route element={<SchoolAdminLayout />}> {/* هذا Layout مع الناف بار */}
@@ -59,6 +78,7 @@ function App() {
           <Route path="grades" element={<TeacherGradesPage />} />
           <Route path="exams" element={<TeacherExamsPage />} />
           <Route path="schedule" element={<TeacherSchedulePage/>}/>
+          <Route path="lessons" element={<TeacherLessonPage/>}/>
         </Route>
       </Route>
      

@@ -7,6 +7,9 @@ const rateLimit = require("express-rate-limit");
 const apiRoutes = require("./routes");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
+const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload"); 
+const path = require("path");
 
 function createApp() {
     const app = express();
@@ -34,9 +37,24 @@ app.use(cors({
     // Body parsers
     app.use(express.json({ limit: "1mb" }));
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser()); 
+    const fs = require("fs");
+const tempDir = "C:/tmp/";
+
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
+    app.use(
+  fileUpload({
+    useTempFiles: false
+      // لو ويندوز
+  })
+);
 
     // Logger examples
     app.use(morgan("dev")); // professional logger
+    app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
     // Root
     app.get("/", (_req, res) => res.send("Session 27 - Controllers & Middleware"));

@@ -73,11 +73,21 @@ function TeacherClassLayout() {
                 </NavLink>
               </li>
               <li className="nav-item">
+               <NavLink
+                 to={`/dashboard/teacher/classes/${classId}/schedule`}
+               className={({ isActive }) => "nav-link px-3" + (isActive ? " active" : "")}
+               >
+               Schedule
+                   </NavLink>
+</li>
+<li className="nav-item">
   <NavLink
-    to={`/dashboard/teacher/classes/${classId}/schedule`}
-    className={({ isActive }) => "nav-link px-3" + (isActive ? " active" : "")}
+    to={`/dashboard/teacher/classes/${classId}/lessons`}
+    className={({ isActive }) =>
+      "nav-link px-3" + (isActive ? " active" : "")
+    }
   >
-    Schedule
+    Lessons
   </NavLink>
 </li>
             </ul>

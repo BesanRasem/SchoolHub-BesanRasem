@@ -25,7 +25,7 @@ function TeachersPage() {
     try {
       const [teachersRes, classesRes] = await Promise.all([
         api.get("/users/teachers"),
-        api.get("/classes/")
+        api.get("/classes/"),
       ]);
 
       setTeachers(teachersRes.data.data);
@@ -36,7 +36,6 @@ function TeachersPage() {
         name: `${c.grade}${c.section}`,
       }));
       setClasses(classesData);
-
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
@@ -44,14 +43,13 @@ function TeachersPage() {
     }
   };
 
-  // البحث
   useEffect(() => {
     let data = teachers;
     if (search) {
       const sLower = search.toLowerCase();
       data = data.filter(
         (t) =>
-          t.name.toLowerCase().includes(sLower) || 
+          t.name.toLowerCase().includes(sLower) ||
           t._id.includes(search)
       );
     }
@@ -69,41 +67,45 @@ function TeachersPage() {
     if (!window.confirm("Are you sure you want to delete this teacher?")) return;
     try {
       await api.delete(`/users/${teacherId}`);
-      setTeachers(prev => prev.filter(t => t._id !== teacherId));
+      setTeachers((prev) => prev.filter((t) => t._id !== teacherId));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to delete teacher");
     }
   };
 
-  const handleSaveTeacher = async (e) => {
-    e.preventDefault();
+  // --- Add / Save Teacher منفصل ---
+  const handleSaveTeacher = async () => {
+    if (!teacherName) return alert("Please enter teacher name");
+
     setLoading(true);
     setErrorMsg("");
 
     try {
       if (editingTeacherId) {
-        // تعديل
+        // تحديث Teacher موجود
         await api.put(`/users/teachers/${editingTeacherId}`, {
           name: teacherName,
-          classId: teacherClassId || null
+          classId: teacherClassId || null,
         });
       } else {
-        // إضافة جديد
-        await api.post("/users/create", {
+        // إضافة Teacher جديد
+        const res = await api.post("/users/teachers", {
           name: teacherName,
-          role: "teacher",
-          classId: teacherClassId || null
+          classId: teacherClassId || null,
         });
+        alert(res.data.message || "Teacher added successfully");
       }
 
+      // إعادة تحميل البيانات
       await fetchInitialData();
+
+      // إعادة تهيئة الفورم
       setShowModal(false);
       setTeacherName("");
       setTeacherClassId("");
       setEditingTeacherId(null);
-
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || "Error saving teacher");
+      setErrorMsg(err.response?.data?.message || "Failed to save teacher");
     } finally {
       setLoading(false);
     }
@@ -113,12 +115,15 @@ function TeachersPage() {
     <div className="container-fluid mt-4">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
         <h2 className="fw-bold">Teachers</h2>
-        <button className="btn btn-primary" onClick={() => {
-          setEditingTeacherId(null);
-          setTeacherName("");
-          setTeacherClassId("");
-          setShowModal(true);
-        }}>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            setEditingTeacherId(null);
+            setTeacherName("");
+            setTeacherClassId("");
+            setShowModal(true);
+          }}
+        >
           + Add Teacher
         </button>
       </div>
@@ -148,7 +153,11 @@ function TeachersPage() {
           </thead>
           <tbody>
             {loading && filteredTeachers.length === 0 ? (
-              <tr><td colSpan="5" className="text-center">Loading...</td></tr>
+              <tr>
+                <td colSpan="5" className="text-center">
+                  Loading...
+                </td>
+              </tr>
             ) : (
               filteredTeachers.map((t) => (
                 <tr key={t._id}>
@@ -156,11 +165,23 @@ function TeachersPage() {
                   <td>{t._id}</td>
                   <td>{t.email || "-"}</td>
                   <td>
-                    {classes.find((c) => c.AdminClass === t._id || (c.AdminClass?._id === t._id))?.name || "-"}
+                    {classes.find(
+                      (c) => c.AdminClass === t._id || c.AdminClass?._id === t._id
+                    )?.name || "-"}
                   </td>
                   <td>
-                    <button className="btn btn-sm btn-primary me-1" onClick={() => handleEditClick(t)}>Edit</button>
-                    <button className="btn btn-sm btn-primary" onClick={() => handleDelete(t._id)}>Delete</button>
+                    <button
+                      className="btn btn-sm btn-primary me-1"
+                      onClick={() => handleEditClick(t)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => handleDelete(t._id)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
@@ -175,12 +196,23 @@ function TeachersPage() {
             <div className="modal-dialog">
               <div className="modal-content shadow-lg">
                 <div className="modal-header">
-                  <h5 className="modal-title">{editingTeacherId ? "Edit Teacher" : "Add New Teacher"}</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                  <h5 className="modal-title">
+                    {editingTeacherId ? "Edit Teacher" : "Add New Teacher"}
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  ></button>
                 </div>
                 <div className="modal-body">
                   {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
-                  <form onSubmit={handleSaveTeacher}>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSaveTeacher();
+                    }}
+                  >
                     <div className="mb-3">
                       <label className="form-label">Teacher Full Name</label>
                       <input
@@ -192,9 +224,28 @@ function TeachersPage() {
                       />
                     </div>
 
-                   
+                    {/* اختيار Class اختياري */}
+                    <div className="mb-3">
+                      <label className="form-label">Assign to Class (optional)</label>
+                      <select
+                        className="form-control"
+                        value={teacherClassId}
+                        onChange={(e) => setTeacherClassId(e.target.value)}
+                      >
+                        <option value="">None</option>
+                        {classes.map((c) => (
+                          <option key={c._id} value={c._id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                    <button type="submit" className="btn btn-primary w-100 py-2" disabled={loading}>
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100 py-2"
+                      disabled={loading}
+                    >
                       {loading ? "Saving..." : "Save"}
                     </button>
                   </form>
@@ -202,7 +253,10 @@ function TeachersPage() {
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show" onClick={() => setShowModal(false)}></div>
+          <div
+            className="modal-backdrop fade show"
+            onClick={() => setShowModal(false)}
+          ></div>
         </>
       )}
     </div>

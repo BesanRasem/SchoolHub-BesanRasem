@@ -1,102 +1,106 @@
 const Class = require("../models/class");
+const Subject = require("../models/subject");
+const User = require("../models/user");
 
 async function createClass(req, res, next) {
   try {
-    const { grade, section } = req.body;
-
+    const { grade, section, AdminClass } = req.body;
     const newClass = await Class.create({
       grade,
       section,
       schoolId: req.user.schoolId,
+      AdminClass: AdminClass || null,
     });
-
     res.status(201).json({ ok: true, data: newClass });
-
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(400).json({
-        ok: false,
-        message: "Class already exists in this school",
-      });
+      return res.status(400).json({ ok: false, message: "Class already exists" });
     }
     next(err);
   }
 }
 
-
-
 async function listClasses(req, res, next) {
   try {
-    const query = {
-      schoolId: req.user.schoolId, 
-    };
-
-    const classes = await Class.find(query)
-      .populate("homeroomTeacher", "name");
-
+    const classes = await Class.find({ schoolId: req.user.schoolId })
+      .populate("AdminClass", "name email");
     res.json({
       ok: true,
-      total: classes.length, 
-      data: classes,        
+      total: classes.length,
+      data: classes,
     });
-
   } catch (err) {
     next(err);
   }
 }
 
+async function listMyClasses(req, res, next) {
+  try {
+    const teacherId = req.user.id;
+    const schoolId = req.user.schoolId;
+
+    const homeroomClasses = await Class.find({ schoolId: schoolId, AdminClass: teacherId }).lean();
+    const subjectEntries = await Subject.find({ schoolId: schoolId, teacherId: teacherId }).distinct("classId");
+    const subjectClasses = await Class.find({ _id: { $in: subjectEntries }, AdminClass: { $ne: teacherId } }).lean();
+
+    const allMyClasses = [
+      ...homeroomClasses.map(c => ({ ...c, type: "homeroom" })),
+      ...subjectClasses.map(c => ({ ...c, type: "subject" }))
+    ];
+
+    res.json({ ok: true, data: allMyClasses });
+  } catch (err) {
+    next(err);
+  }
+}
 
 async function deleteClass(req, res, next) {
   try {
     const classId = req.params.id;
-
-    const classDoc = await Class.findOne({
-      _id: classId,
-      schoolId: req.user.schoolId,
-    });
-
-    if (!classDoc) {
-      return res.status(404).json({ message: "Class not found" });
-    }
+    const classDoc = await Class.findOne({ _id: classId, schoolId: req.user.schoolId });
+    if (!classDoc) return res.status(404).json({ message: "Class not found" });
 
     await Class.deleteOne({ _id: classId });
+    await User.updateMany({ classId }, { $unset: { classId: "" } });
 
-    await User.updateMany(
-      { classId },
-      { $unset: { classId: "" } } 
-    );
-
-    res.json({ ok: true, message: "Class deleted and removed from students" });
-
+    res.json({ ok: true, message: "Class deleted successfully" });
   } catch (err) {
     next(err);
   }
 }
 
-
-
 async function setAdminClass(req, res, next) {
   try {
     const { teacherId } = req.body;
+    const updatedClass = await Class.findByIdAndUpdate(
+      req.params.id,
+      { AdminClass: teacherId || null },
+      { new: true }
+    ).populate("AdminClass", "name email");
 
-    const teacher = await User.findOne({
-      _id: teacherId,
-      role: "teacher",
-      schoolId: req.user.schoolId,
-    });
+    res.json({ ok: true, data: updatedClass });
+  } catch (err) {
+    next(err);
+  }
+}
 
-    if (!teacher) {
-      return res.status(400).json({
-        message: "Teacher not found in this school",
-      });
-    }
+async function updateClass(req, res, next) {
+  try {
+    const classId = req.params.id;
+    const { grade, section, teacherId } = req.body;
 
-    await Class.findByIdAndUpdate(req.params.id, {
-      homeroomTeacher: teacherId,
-    });
+    const classDoc = await Class.findOne({ _id: classId, schoolId: req.user.schoolId });
+    if (!classDoc) return res.status(404).json({ ok: false, message: "Class not found" });
 
-    res.json({ ok: true, message: "Homeroom teacher updated" });
+    if (grade !== undefined) classDoc.grade = grade;
+    if (section !== undefined) classDoc.section = section;
+    if (teacherId !== undefined) classDoc.AdminClass = teacherId || null;
 
+    await classDoc.save();
+
+    const populated = await Class.findById(classId).populate("AdminClass", "name email");
+
+    res.json({ ok: true, message: "Class updated successfully", data: populated });
   } catch (err) {
     next(err);
   }
@@ -105,6 +109,8 @@ async function setAdminClass(req, res, next) {
 module.exports = {
   createClass,
   listClasses,
+  listMyClasses,
   deleteClass,
   setAdminClass,
+  updateClass
 };

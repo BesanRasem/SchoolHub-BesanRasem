@@ -1,86 +1,102 @@
-import React, { useState } from "react";
-import "./SchedualStudentPage.css"; // تأكد اسم الملف صحيح
+import { useEffect, useState } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./SchedualStudentPage.css";
+import SideNav from "../components/SideNav";
+import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
-const scheduleData = [
-  {
-    day: "Monday",
-    subjects: [
-      { name: "Math", from: "08:00", to: "09:30" },
-      { name: "Physics", from: "09:45", to: "11:15" },
-      { name: "English", from: "11:30", to: "12:30" },
-    ],
-  },
-  {
-    day: "Tuesday",
-    subjects: [
-      { name: "Chemistry", from: "08:00", to: "09:30" },
-      { name: "History", from: "09:45", to: "11:15" },
-      { name: "Art", from: "11:30", to: "12:30" },
-    ],
-  },
-  {
-    day: "Wednesday",
-    subjects: [
-      { name: "Biology", from: "08:00", to: "09:30" },
-      { name: "Math", from: "09:45", to: "11:15" },
-      { name: "Physical Education", from: "11:30", to: "12:30" },
-    ],
-  },
-  {
-    day: "Thursday",
-    subjects: [
-      { name: "English", from: "08:00", to: "09:30" },
-      { name: "Physics", from: "09:45", to: "11:15" },
-      { name: "Music", from: "11:30", to: "12:30" },
-    ],
-  },
-  {
-    day: "Friday",
-    subjects: [
-      { name: "Chemistry", from: "08:00", to: "09:30" },
-      { name: "Math", from: "09:45", to: "11:15" },
-      { name: "Computer Science", from: "11:30", to: "12:30" },
-    ],
-  },
-];
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
 
-export default function SchedualStudentPage() {
-  const [selectedDay, setSelectedDay] = useState("Monday");
+export default function ScheduleStudentPage() {
+  const { user } = useAuth();
+  const [scheduleData, setScheduleData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDay, setSelectedDay] = useState("Sunday");
 
-  const handleDayClick = (day) => setSelectedDay(day);
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      if (!user?.classId) return;
+      try {
+        const res = await api.get(`/schedule?classId=${user.classId}`);
+        setScheduleData(
+          res.data.data.map(item => ({
+            subject: item.subjectId.name,
+            day: item.day,
+            startTime: item.startTime,
+            endTime: item.endTime
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const currentSchedule = scheduleData.find(
-    (item) => item.day === selectedDay
+    fetchSchedule();
+  }, [user]);
+
+  const filteredSchedule = scheduleData.filter(
+    slot => slot.day === selectedDay
   );
 
   return (
     <div className="schedule-page">
-      <h1 className="title">My Weekly Schedule</h1>
+      <SideNav />
 
-      <div className="days-buttons">
-        {scheduleData.map((item) => (
-          <button
-            key={item.day}
-            onClick={() => handleDayClick(item.day)}
-            className={`day-btn ${selectedDay === item.day ? "active" : ""}`}
-          >
-            {item.day}
-          </button>
-        ))}
-      </div>
+      <div className="schedule-content container">
+        <h1 className="schedule-title text-center">Class Schedule</h1>
 
-      <div className="schedule-card">
-        <h2 className="schedule-title">{selectedDay}'s Classes</h2>
-        <ul className="subjects-list">
-          {currentSchedule.subjects.map((subject, index) => (
-            <li key={index} className="subject-item">
-              <div className="subject-name">{subject.name}</div>
-              <div className="subject-time">
-                {subject.from} - {subject.to}
-              </div>
-            </li>
+        {/* Day buttons – نفس ستايل الاكزام */}
+        <div className="day-selector d-flex justify-content-center flex-wrap mb-4">
+          {DAYS.map(day => (
+            <button
+              key={day}
+              className={`day-btn ${selectedDay === day ? "active" : ""}`}
+              onClick={() => setSelectedDay(day)}
+            >
+              {day}
+            </button>
           ))}
-        </ul>
+        </div>
+
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : (
+          <div className="table-responsive">
+            <table className="table table-striped exam-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Day</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredSchedule.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="text-center fw-bold">
+                      No classes on {selectedDay}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredSchedule.map((slot, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? "even-row" : "odd-row"}
+                    >
+                      <td>{slot.subject}</td>
+                      <td>{slot.day}</td>
+                      <td>{slot.startTime}</td>
+                      <td>{slot.endTime}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -32,5 +32,18 @@ function superAdmin(req, res, next) {
   }
   next();
 }
-
-module.exports = { auth, schoolAdmin ,superAdmin};
+function teacher(req, res, next) {
+  if (!req.user || req.user.role !== "teacher") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  next();
+}
+function allowRoles(...roles) {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+}
+module.exports = { auth, schoolAdmin ,superAdmin,teacher,allowRoles};

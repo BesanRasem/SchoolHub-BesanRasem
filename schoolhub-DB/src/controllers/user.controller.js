@@ -5,11 +5,12 @@ const ApiError = require("../utils/ApiError");
 const UserToken = require("../models/userToken");
 const School = require("../models/school");
 const Class = require("../models/class");
+const mongoose = require("mongoose");
 
 
 function generateAccessToken(user) {
   return jwt.sign(
-    { id: user._id, role: user.role, schoolId: user.schoolId },
+    { id: user._id, role: user.role, schoolId: user.schoolId ,classId:user.classId},
     process.env.JWT_SECRET,
     { expiresIn: "15m" } 
   );
@@ -19,7 +20,7 @@ function generateRefreshToken(user) {
   return jwt.sign(
     { id: user._id },
     process.env.REFRESH_SECRET,
-    { expiresIn: "7d" } 
+    { expiresIn: "5h" } 
   );
 }
 
@@ -105,6 +106,19 @@ async function activateUser(req, res, next) {
         message: "Missing required field(s): userId, email, password"
       });
     }
+        const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      return res.status(400).json({
+        ok: false,
+        message: "Email already in use"
+      });
+    }
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid user ID format"
+      });
+    }
 
     const user = await User.findById(userId);
     if (!user) {
@@ -143,20 +157,20 @@ async function login(req, res, next) {
         if (!isMatch) throw new ApiError("Invalid credentials", 401);
  
 
-         const accessToken = generateAccessToken(user);
+  const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
   await UserToken.create({
     userId: user._id,
     token: refreshToken,
-    expiresAt: new Date(Date.now() + 7*24*60*60*1000), 
+    expiresAt: new Date(Date.now() + 5*60*60*1000), 
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,      
     sameSite: "Strict",
-    maxAge: 7*24*60*60*1000
+    maxAge: 5*60*60*1000
   });
 
  
@@ -240,81 +254,33 @@ async function createUser(req, res, next) {
     const {
       name,
       role,
-      nationalId,      // optional
+      nationalId,     
       classId,
       birthDate,
       parentName,
-      parentNationalId, // optional
+      parentNationalId, 
       parentPhone,
     } = req.body;
 
     const schoolId = req.user.schoolId;
 
-    // =========================
-    // 1️⃣ تحقق أساسي
-    // =========================
-    if (!name || !role) {
-      return res.status(400).json({
-        ok: false,
-        message: "Name and role are required"
-      });
-    }
+    if (!name || !role) return res.status(400).json({ ok: false, message: "Name and role are required" });
 
-    // =========================
-    // 2️⃣ تحقق من الصف إذا انبعت
-    // =========================
     if (classId) {
-      const existingClass = await Class.findOne({
-        _id: classId,
-        schoolId
-      });
-
-      if (!existingClass) {
-        return res.status(404).json({
-          ok: false,
-          message: "Class not found in this school"
-        });
-      }
+      const existingClass = await Class.findOne({ _id: classId, schoolId });
+      if (!existingClass) return res.status(404).json({ ok: false, message: "Class not found in this school" });
     }
 
     let parent = null;
-
-    // =========================
-    // 3️⃣ منطق الطالب
-    // =========================
     if (role === "student") {
+      if (!parentName && !parentNationalId && !parentPhone) return res.status(400).json({ ok: false, message: "Parent info required" });
 
-      // تحقق من بيانات الأب
-      if (!parentName && !parentNationalId && !parentPhone) {
-        return res.status(400).json({
-          ok: false,
-          message: "Parent information is required for students"
-        });
-      }
-
-      // =========================
-      // 3a️⃣ البحث عن الأب الذكي
-      // =========================
-      const parentQuery = {
-        role: "parent",
-        schoolId
-      };
-
-      if (parentNationalId) {
-        // إذا عنده رقم وطني → تحقق على nationalId فقط
-        parentQuery.nationalId = parentNationalId;
-      } else if (parentPhone) {
-        // إذا ما عنده رقم → تحقق على الاسم + الهاتف
-        parentQuery.name = parentName;
-        parentQuery.parentPhone = parentPhone;
-      } else {
-        // fallback على الاسم فقط
-        parentQuery.name = parentName;
-      }
+      const parentQuery = { role: "parent", schoolId };
+      if (parentNationalId) parentQuery.nationalId = parentNationalId;
+      else if (parentPhone) parentQuery.name = parentName, parentQuery.parentPhone = parentPhone;
+      else parentQuery.name = parentName;
 
       parent = await User.findOne(parentQuery);
-
-      // إنشاء الأب إذا غير موجود
       if (!parent) {
         parent = await User.create({
           name: parentName,
@@ -327,73 +293,65 @@ async function createUser(req, res, next) {
         });
       }
 
-      // =========================
-      // 3b️⃣ تحقق من الطالب الذكي
-      // =========================
-      const studentQuery = {
+      const existingStudent = await User.findOne({
         role: "student",
-        schoolId
-      };
-
-      if (nationalId) {
-        // إذا عنده رقم وطني → تحقق على nationalId فقط
-        studentQuery.nationalId = nationalId;
-      } else {
-        // إذا ما عنده رقم → تحقق على الاسم + DOB + parentId
-        studentQuery.name = name;
-        studentQuery.birthDate = birthDate;
-        studentQuery.parentId = parent._id;
-      }
-
-      const existingStudent = await User.findOne(studentQuery);
-
-      if (existingStudent) {
-        return res.status(400).json({
-          ok: false,
-          message: "Student already exists in this school"
-        });
-      }
+        schoolId,
+        $or: [
+          { nationalId: nationalId || null },
+          { name, birthDate }
+        ]
+      });
+      if (existingStudent) return res.status(400).json({ ok: false, message: "Student already exists in this school" });
     }
 
-    // =========================
-    // 4️⃣ بناء بيانات المستخدم
-    // =========================
-    const newUserData = {
-      name,
-      role,
-      schoolId,
-      nationalId: nationalId || null,  // optional
-      classId: classId || null,
-      birthDate: birthDate || null,
-      isActivated: false
-    };
+    const newUserData = { name, role, schoolId, nationalId: nationalId || null, classId: classId || null, birthDate: birthDate || null };
+    if (role === "student" && parent) newUserData.parentId = parent._id;
 
-    if (role === "student" && parent) {
-      newUserData.parentId = parent._id;
-    }
-
-    // =========================
-    // 5️⃣ إنشاء المستخدم
-    // =========================
     const newUser = await User.create(newUserData);
 
-    // =========================
-    // 6️⃣ ربط الطالب بالأب
-    // =========================
     if (role === "student" && parent) {
       parent.childrenIds.push(newUser._id);
       await parent.save();
     }
 
-    // =========================
-    // 7️⃣ الرد النهائي
-    // =========================
-    res.status(201).json({
+    res.status(201).json({ ok: true, message: "User created successfully", data: { user: newUser, parent: parent || null } });
+
+  } catch (err) {
+    next(err);
+  }
+}
+async function listStudentsWithParent(req, res, next) {
+  try {
+    const { page = 1, limit = 10, search = "", classId } = req.query;
+    const skip = (page - 1) * limit;
+
+    const query = { schoolId: req.user.schoolId, role: "student" };
+
+    if (classId) query.classId = classId;
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { nationalId: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    const [students, total] = await Promise.all([
+      User.find(query)
+        .sort({ createdAt: -1 })
+        .skip(Number(skip))
+        .limit(Number(limit))
+        .populate({ path: "parentId", select: "name email parentPhone nationalId" })
+        .lean(),
+      User.countDocuments(query)
+    ]);
+
+    res.json({
       ok: true,
-      message: "User created successfully",
-      data: {
-        user: newUser,
-        parent: parent || null
+      data: students,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit)
       }
     });
 
@@ -401,31 +359,240 @@ async function createUser(req, res, next) {
     next(err);
   }
 }
+async function deleteStudent(req, res) {
+  const student = await User.findByIdAndUpdate(
+    req.params.id,
+    { isDeleted: true },
+    { new: true }
+  );
 
-async function listUsers(req, res, next) {
-    try {
-        const users = await User.find({ schoolId: req.user.schoolId })
-            .sort({ createdAt: -1 });
-        res.json({ ok: true, data: users });
-    } catch (err) {
-        next(err);
+  if (!student) {
+    return res.status(404).json({ ok: false, message: "Student not found" });
+  }
+
+  res.json({ ok: true, message: "Student deleted successfully" });}
+async function updateStudent(req, res) {
+  try {
+    const studentId = req.params.id;
+    const {
+      name,
+      birthDate,
+      nationalId,
+      classId,
+      parentName,
+      parentNationalId,
+      parentPhone
+    } = req.body;
+
+    const schoolId = req.user.schoolId;
+
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({ ok: false, message: "Invalid student ID" });
     }
+
+    const student = await User.findById(studentId);
+    if (!student || student.role !== "student") {
+      return res.status(404).json({ ok: false, message: "Student not found" });
+    }
+
+    const existingStudent = await User.findOne({
+      _id: { $ne: studentId },
+      role: "student",
+      schoolId,
+      $or: [
+        { nationalId: nationalId || null },
+        {
+          name: name || student.name,
+          birthDate: birthDate || student.birthDate
+        }
+      ]
+    });
+
+    if (existingStudent) {
+      return res.status(400).json({
+        ok: false,
+        message: "Student data already used by another student"
+      });
+    }
+
+    if (name) student.name = name;
+    if (birthDate) student.birthDate = birthDate;
+    if (nationalId !== undefined) student.nationalId = nationalId;
+    if (classId !== undefined) student.classId = classId;
+
+    await student.save();
+
+    if (student.parentId) {
+      const parent = await User.findById(student.parentId);
+
+      if (parent) {
+        if (parentName !== undefined) parent.name = parentName;
+        if (parentNationalId !== undefined)
+          parent.nationalId = parentNationalId;
+        if (parentPhone !== undefined)
+          parent.parentPhone = parentPhone;
+
+        await parent.save();
+      }
+    }
+
+    res.json({
+      ok: true,
+      message: "Student and parent updated successfully",
+      data: student
+    });
+
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+}
+async function listTeachers(req, res, next) {
+  try {
+    const teachers = await User.find({
+      schoolId: req.user.schoolId,
+      role: "teacher",
+    })
+    .sort({ createdAt: -1 })
+
+    res.json({
+      ok: true,
+      data: teachers
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+async function updateTeacher(req, res) {
+  try {
+    const teacherId = req.params.id;
+    const { name, classId } = req.body;
+    const schoolId = req.user.schoolId;
+
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({ ok: false, message: "Invalid teacher ID" });
+    }
+
+    const teacher = await User.findById(teacherId);
+    if (!teacher || teacher.role !== "teacher") {
+      return res.status(404).json({ ok: false, message: "Teacher not found" });
+    }
+
+    if (name) teacher.name = name;
+
+    if (classId) {
+      const classExists = await Class.findOne({ _id: classId, schoolId });
+      if (!classExists) {
+        return res.status(404).json({ ok: false, message: "Class not found in this school" });
+      }
+      teacher.classId = classId;
+    }
+
+    await teacher.save();
+
+    res.json({
+      ok: true,
+      message: "Teacher updated successfully",
+      data: teacher
+    });
+
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
 }
 
 
+async function createTeacher(req, res, next) {
+  try {
+    const { name, classId } = req.body;
+    const schoolId = req.user.schoolId; 
 
+    if (!name) {
+      return res.status(400).json({ ok: false, message: "Teacher name is required" });
+    }
 
+    if (classId) {
+      if (!mongoose.Types.ObjectId.isValid(classId)) {
+        return res.status(400).json({ ok: false, message: "Invalid classId" });
+      }
+      const existingClass = await Class.findOne({ _id: classId, schoolId });
+      if (!existingClass) {
+        return res.status(404).json({ ok: false, message: "Class not found in this school" });
+      }
+    }
 
+    const newTeacher = await User.create({
+      name,
+      role: "teacher",
+      schoolId,
+      classId: classId || null,
+      isActivated: false
+    });
 
+    res.status(201).json({ ok: true, message: "Teacher created successfully", data: newTeacher });
+
+  } catch (err) {
+    next(err);
+  }
+}
+const getStudentsByClass = async (req, res, next) => {
+  try {
+    const { classId, page = 1, limit = 10 } = req.query;
+
+    if (!classId) {
+      return res.status(400).json({ message: "classId required" });
+    }
+
+    const skip = (page - 1) * limit;
+
+    const objectClassId = new mongoose.Types.ObjectId(classId);
+
+    const [students, total] = await Promise.all([
+      User.find({
+        classId: objectClassId,
+        role: "student",
+        schoolId: req.user.schoolId
+      })
+        .select("name _id")
+        .skip(skip)
+        .limit(Number(limit))
+        .lean(),
+
+      User.countDocuments({
+        classId: objectClassId,
+        role: "student",
+        schoolId: req.user.schoolId
+      })
+    ]);
+
+    res.json({
+      ok: true,
+      data: students,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 module.exports = {
     createUser,
     activateUser,
     login,
     forgotPassword,
-    listUsers,
+    listStudentsWithParent,
     createSuperAdmin,
     createSchoolAdmin,
     logout,
-    refresh
+    refresh,
+    deleteStudent,
+    updateStudent,
+    listTeachers,
+    updateTeacher,
+    createTeacher,
+    getStudentsByClass
+
 };

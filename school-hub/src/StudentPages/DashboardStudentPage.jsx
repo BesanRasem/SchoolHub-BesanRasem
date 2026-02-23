@@ -6,38 +6,24 @@ import './DashboardStudentPage.css';
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SideNav from "../components/SideNav";
+import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
 
-
-function CalendarBox({activeType}) {
+function CalendarBox({activeType, attendanceDates = [], examDates = []}) {
   const [startDate, setStartDate] = useState(new Date());
   const homeworkDates = ["2026-02-10", "2026-02-15"];
-const examDates = ["2026-02-20"];
-const absenceDates = ["2026-02-05"];
-const holidayDates=["2026-02-04"];
-
+  const holidayDates = ["2026-02-04"];
 
   function dayStyle(date) {
-  const d = date.toLocaleDateString("en-CA");
+    const d = date.toLocaleDateString("en-CA");
 
-  if (activeType === "holiday" && holidayDates.includes(d)) {
-    return "holiday";
+    if (activeType === "holiday" && holidayDates.includes(d)) return "holiday";
+    if (activeType === "homework" && homeworkDates.includes(d)) return "homework";
+    if (activeType === "exam" && examDates.includes(d)) return "exam"; // جديد
+    if (activeType === "absence" && attendanceDates.includes(d)) return "absence";
+
+    return undefined;
   }
-
-  if (activeType === "homework" && homeworkDates.includes(d)) {
-    return "homework";
-  }
-
-  if (activeType === "exam" && examDates.includes(d)) {
-    return "exam";
-  }
-
-  if (activeType === "absence" && absenceDates.includes(d)) {
-    return "absence";
-  }
-
-  return undefined;
-}
-
 
   return (
     <div className="calendar-box">
@@ -133,22 +119,51 @@ function PendingAssignments(){
   );
 }
 
-function AttendanceRate(){
-  return(
+function AttendanceRate() {
+  const { user } = useAuth();
+  const [absenceRate, setAbsenceRate] = useState(null);
+
+  useEffect(() => {
+    if (user?._id) {
+      api.get(`/attendance/student/${user._id}`)
+        .then(res => {
+          const totalDays = res.data.totalDays || 0;
+          const absentDays = res.data.absentDates?.length || 0;
+          const rate = totalDays === 0 ? 0 : Math.round((absentDays / totalDays) * 100);
+          setAbsenceRate(rate);
+        })
+        .catch(err => console.error(err));
+    }
+  }, [user]);
+
+  function getBarColor(rate) {
+    if (rate < 25) return "#1cc88a";    // أخضر → منخفض
+    if (rate < 50) return "#f6c23e";    // أصفر → متوسط
+    return "#e74a3b";                    // أحمر → عالي
+  }
+
+  return (
     <div>
       <div className="card dash-card CompletedLessons-card note-3">
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <i className="fa-solid fa-paperclip clip"></i>
-            <h5 className="card-title">Attendance Rate</h5>
+            <h5 className="card-title">Absence Rate</h5>
           </div>
-          <h3 className="my-2">5%</h3>
+          <h3 className="my-2">
+            {absenceRate !== null ? `${absenceRate}%` : "Loading..."}
+          </h3>
           <div className="progress">
-            <div className="progress-bar progress-bar-attendance "
-              aria-valuenow={95}
+            <div
+              className="progress-bar"
+              style={{
+                width: `${absenceRate || 0}%`,
+                backgroundColor: getBarColor(absenceRate)
+              }}
+              aria-valuenow={absenceRate || 0}
               aria-valuemin={0}
-              aria-valuemax={100}>
-            </div>
+              aria-valuemax={100}
+            ></div>
           </div>
         </div>
       </div>
@@ -157,7 +172,70 @@ function AttendanceRate(){
 }
 
 export default function DashbourdStudentPage() {
-const [activeType, setActiveType] = useState(null);
+ const [activeType, setActiveType] = useState(null);
+  const [attendanceDates, setAttendanceDates] = useState([]);
+  const [examDates, setExamDates] = useState([]);
+  const { user } = useAuth();
+  const [chartData, setChartData] = useState([]);
+useEffect(() => {
+  if (!user?.classId) return;
+
+  const fetchGrades = async () => {
+    try {
+      const res = await api.get("/grades/student"); // جلب العلامات للطالب
+      const subjects = res.data.data;
+
+      if (!subjects || subjects.length === 0) return;
+
+      // رأس الجدول
+      const header = ["Test", ...subjects.map(sub => sub.name)];
+
+      // لبناء الصفوف
+      const tests = ["test1", "test2", "test3", "final"];
+      const maxScores = { test1: 20, test2: 20, test3: 20, final: 40 };
+
+      const rows = tests.map((test, idx) => {
+        const rowValues = subjects.map(sub => {
+          const score = sub[test] ?? 0;
+          // تحويل للـ chart (0-100%)
+          return Math.round((score / maxScores[test]) * 100);
+        });
+
+        const tooltips = subjects.map(sub => {
+          const score = sub[test] ?? 0;
+          return { v: Math.round((score / maxScores[test]) * 100), f: `${score} / ${maxScores[test]}` };
+        });
+
+        return [ `Test ${idx + 1}`, ...tooltips ];
+      });
+
+      setChartData([header, ...rows]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchGrades();
+}, [user]);
+
+useEffect(() => {
+  if (activeType === "absence" && user?._id) {
+    api.get(`/attendance/student/${user._id}`)
+      .then(res => setAttendanceDates(res.data.absentDates || []))
+      .catch(err => console.error(err));
+  }
+
+  // لما يضغط Exam نجيب أيام الامتحانات
+  if (activeType === "exam" && user?.classId) {
+    api.get(`/exams/student?classId=${user.classId}`)
+      .then(res => {
+        // نحتفظ بس بالتاريخ بصيغة "YYYY-MM-DD"
+        const dates = res.data.data.map(e => new Date(e.examDate).toISOString().split("T")[0]);
+        setExamDates(dates);
+      })
+      .catch(err => console.error(err));
+  }
+}, [activeType, user]);
 
 
  
@@ -197,7 +275,7 @@ const [activeType, setActiveType] = useState(null);
                       chartType="LineChart"
                       width="100%"
                       height="350px"
-                      data={data}
+                      data={chartData}
                       options={options}
                     />
                   </div>
@@ -215,8 +293,11 @@ const [activeType, setActiveType] = useState(null);
                   <h5 className="card-title">Calendar</h5>
                 </div>
 
-                <CalendarBox   activeType={activeType} />
-                <div className="calendar-legend mt-3">
+<CalendarBox 
+  activeType={activeType} 
+  attendanceDates={attendanceDates}
+  examDates={examDates}  // جديد
+/>                <div className="calendar-legend mt-3">
 
   <button className="legend-btn holiday-btn" onClick={() => setActiveType("holiday")}>
     Holiday

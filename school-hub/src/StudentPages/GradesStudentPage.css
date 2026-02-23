@@ -1,54 +1,62 @@
+/* GradesStudentPage.css */
 .grades-page {
-  gap: 20px; 
+  gap: 20px;
   height: 100vh;
 }
-.grades-schedule {
-  margin: 40px ;
-  padding: 20px;
-  background-color: #fdfdfd;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+.grades-container {
+  margin: 40px;
 }
 
-.grades-schedule-title {
+.grades-title {
   font-size: 35px;
   margin-bottom: 20px;
   color: rgb(167, 48, 236);
   font-weight: bold;
 }
 
-.grade-table {
+.grades-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 1rem;
 }
 
-.grade-table th,
-.grade-table td {
+.grades-table th,
+.grades-table td {
   padding: 12px 15px;
   border: 1px solid #fdf6f6;
   text-align: center;
 }
 
-.grade-table th {
-  background-color: #a7fc9f; 
+.grades-table th {
+  background-color: #a7fc9f;
   color: rgb(167, 48, 236);
   font-weight: bold;
 }
 
+.even-row {
+  background-color: #fafafa;
+}
 
-.grade-table tr:hover {
+.odd-row {
+  background-color: #f5f5f5;
+}
+
+.grades-table tr:hover {
   background-color: #f1f5f9;
   transition: background-color 0.2s ease;
 }
+
 @media (min-width: 992px) {
   .grades-page {
-    display: flex;      
-  }}
-  @media (max-width: 600px) {
-    .grades-schedule{
-      width: 100%;
-      height: 100%;
-      margin: 0;
-    }
+    display: flex;
   }
+}
+
+@media (max-width: 766px) {
+  .grades-container{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+}

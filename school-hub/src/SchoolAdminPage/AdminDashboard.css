@@ -54,3 +54,16 @@ border-radius: 16px;
   width: auto;
 }
 
+.btn-secondary{
+  background-color:#a7fc9f ;
+  color:rgb(167, 48, 236) ;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+.btn-secondary:hover{
+  background-color:rgb(167, 48, 236) ;
+  color: white;
+
+
+}

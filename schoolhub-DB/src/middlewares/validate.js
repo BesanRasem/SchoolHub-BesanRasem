@@ -4,7 +4,7 @@ const ApiError = require("../utils/ApiError");
 function validate(req, _res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return next(new ApiError("Invalid request data", 400, errors.array()));
+        return next(  new ApiError(errors.array()[0].msg, 400));
     }
     next();
 }

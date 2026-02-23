@@ -1,0 +1,15 @@
+.subject-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.lesson-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-img {
+  height: 150px;
+  object-fit: cover;
+}
