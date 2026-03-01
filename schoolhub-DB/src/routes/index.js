@@ -10,6 +10,11 @@ const attendanceRoutes = require("./attendance.route");
 const gradeRoutes =require("./grade.route");
 const lessonRpoute =require("./lesson.routes");
 const subjectInfoRoutes = require("./subjectInfo.route"); 
+const homeworkRoutes =require("./homework.route");
+const lessonProgressRoutes=require("./lessonProgress.route");
+const schoolAdminRoutes=require("./schoolAdmin.routes");
+const holidayRoutes = require("./holiday.route");
+
 
 router.get("/health", (_req, res) => {
     res.json({ ok: true, message: "API is healthy" });
@@ -26,5 +31,9 @@ router.use("/schedule",scheduleRoutes);
 router.use("/grades",gradeRoutes);
 router.use("/lessons",lessonRpoute);
 router.use("/subject-info", subjectInfoRoutes); 
+router.use("/homework", homeworkRoutes);
+router.use("/lesson-progress", lessonProgressRoutes);
+router.use("/school-admin",schoolAdminRoutes);
+router.use("/holidays", holidayRoutes);
 
 module.exports = router;

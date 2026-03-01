@@ -15,7 +15,6 @@ export default function TeacherGradesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
-  /* ================= RESET لما يتغير الصف ================= */
   useEffect(() => {
     setStudents([]);
     setGrades({});
@@ -23,11 +22,10 @@ export default function TeacherGradesPage() {
     setPage(1);
   }, [classId]);
 
-  /* ================= FETCH SUBJECTS ================= */
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const res = await api.get(`/subjects?classId=${classId}`);
+        const res = await api.get(`/subjects/teach?classId=${classId}`);
         setSubjects(res.data.data || []);
       } catch (err) {
         console.error("Subjects error:", err);
@@ -37,7 +35,6 @@ export default function TeacherGradesPage() {
     if (classId) fetchSubjects();
   }, [classId]);
 
-  /* ================= FETCH STUDENTS ================= */
   const fetchStudents = async (currentPage = 1) => {
     try {
       const res = await api.get(
@@ -57,7 +54,6 @@ export default function TeacherGradesPage() {
     }
   };
 
-  /* ================= FETCH GRADES ================= */
   const fetchGrades = async (subId, currentPage = 1) => {
     setLoading(true);
 
@@ -95,17 +91,15 @@ export default function TeacherGradesPage() {
     }
   };
 
-  /* ================= CHANGE SUBJECT ================= */
   const handleSubjectChange = (e) => {
     const id = e.target.value;
     setSubjectId(id);
 
-    setPage(1); // 👈 مهم جداً
+    setPage(1); 
 
     if (id) fetchGrades(id, 1);
   };
 
-  /* ================= INPUT CHANGE ================= */
   const handleChange = (studentId, field, value) => {
     setGrades((prev) => ({
       ...prev,
@@ -116,7 +110,6 @@ export default function TeacherGradesPage() {
     }));
   };
 
-  /* ================= SAVE GRADE ================= */
   const saveGrade = async (studentId) => {
     const g = grades[studentId];
 
@@ -136,7 +129,6 @@ export default function TeacherGradesPage() {
     }
   };
 
-  /* ================= PAGINATION ================= */
   const handlePageChange = (newPage) => {
     setPage(newPage);
 
@@ -147,7 +139,7 @@ export default function TeacherGradesPage() {
 
   return (
     <div className="container mt-4">
-      <h3 className="fw-bold text-center mb-4">Class Grades</h3>
+      <h3 className="fw-bold  mb-4 title">Class Grades</h3>
 
       <div className="mb-3">
         <select
@@ -168,9 +160,10 @@ export default function TeacherGradesPage() {
 
       {!loading && subjectId && (
         <>
+        <div className="table-responsive">
           <table className="table table-bordered table-striped align-middle">
             <thead>
-              <tr>
+              <tr className="head">
                 <th>Student</th>
                 <th>Test 1</th>
                 <th>Test 2</th>
@@ -210,6 +203,7 @@ export default function TeacherGradesPage() {
               ))}
             </tbody>
           </table>
+          </div>
 
           <div className="d-flex justify-content-between mt-3">
             <button

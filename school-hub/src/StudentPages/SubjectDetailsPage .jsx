@@ -1,17 +1,14 @@
-// SubjectDetailsPage.jsx
 import { useState } from "react";
 import SideNav from "../components/SideNav";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function SubjectDetailsPage() {
-  // بيانات المادة
   const [subject] = useState({
     name: "Mathematics",
     teacherName: "Mr. Ali",
-    imageUrl: "https://placehold.co/600x200?text=Mathematics", // placeholder مضمون
+    imageUrl: "https://placehold.co/600x200?text=Mathematics", 
   });
 
-  // قائمة الدروس
   const [lessons] = useState([
     { id: 1, title: "Algebra Basics", type: "video", videoUrl: "#" },
     { id: 2, title: "Geometry Intro", type: "video", videoUrl: "#" },
@@ -26,7 +23,6 @@ export default function SubjectDetailsPage() {
       <SideNav />
 
       <div className="container-fluid mt-3">
-        {/* Header المادة */}
         <div className="text-center mb-4">
           <img
             src={subject.imageUrl}
@@ -38,7 +34,6 @@ export default function SubjectDetailsPage() {
           <p className="text-muted">Teacher: {subject.teacherName}</p>
         </div>
 
-        {/* قائمة الدروس */}
         <div className="row g-3">
           {lessons.map((lesson) => (
             <div key={lesson.id} className="col-12 col-sm-6 col-md-4">

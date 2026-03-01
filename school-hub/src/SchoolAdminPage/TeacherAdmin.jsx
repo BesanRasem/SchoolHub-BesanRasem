@@ -66,7 +66,7 @@ function TeachersPage() {
   const handleDelete = async (teacherId) => {
     if (!window.confirm("Are you sure you want to delete this teacher?")) return;
     try {
-      await api.delete(`/users/${teacherId}`);
+      await api.delete(`/users/teachers/${teacherId}`);
       setTeachers((prev) => prev.filter((t) => t._id !== teacherId));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to delete teacher");
@@ -224,22 +224,7 @@ function TeachersPage() {
                       />
                     </div>
 
-                    {/* اختيار Class اختياري */}
-                    <div className="mb-3">
-                      <label className="form-label">Assign to Class (optional)</label>
-                      <select
-                        className="form-control"
-                        value={teacherClassId}
-                        onChange={(e) => setTeacherClassId(e.target.value)}
-                      >
-                        <option value="">None</option>
-                        {classes.map((c) => (
-                          <option key={c._id} value={c._id}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                 
 
                     <button
                       type="submit"

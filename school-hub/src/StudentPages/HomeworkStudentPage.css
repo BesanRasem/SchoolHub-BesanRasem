@@ -1,0 +1,111 @@
+.homework-page {
+  gap: 20px;
+min-height: 100vh;}
+
+.homework-content {
+  margin: 40px;
+}
+
+.homework-title {
+  font-size: 35px;
+  margin-bottom: 20px;
+  color: rgb(167, 48, 236);
+  font-weight: bold;
+}
+
+.day-selector {
+  gap: 10px;
+}
+
+.day-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgb(167, 48, 236);
+  background-color: white;
+  color: rgb(167, 48, 236);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-btn:hover,
+.day-btn.active {
+  background-color: rgb(167, 48, 236);
+  color: white;
+}
+
+.homework-card {
+  border: none;
+  border-radius: 18px;
+  background-color: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.homework-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  color: #333;
+}
+
+.card-text {
+  line-height: 1.6;
+}
+
+.due-date {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+}
+
+.status-badge.pending {
+  background-color: #fdeebd;
+  color: #856404;
+}
+
+.status-badge.submitted {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge.late {
+  background-color: #f7c8cc;
+  color: #721c24;
+}
+
+
+.homework-btn{
+  background-color:rgb(250, 249, 249) ;
+  border: 1px solid rgb(167, 48, 236);
+  color:rgb(167, 48, 236) ;
+  border-radius: 6px;
+  font-weight: bold;
+}
+.homework-btn:hover{
+  background-color:rgb(167, 48, 236); ;
+  color:white ;
+  border-radius: 6px;
+  font-weight: bold;
+}
+@media (min-width: 992px) {
+  .homework-page {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .homework-content {
+    width: 100%;
+    margin: 0;
+    padding: 15px;
+  }
+}

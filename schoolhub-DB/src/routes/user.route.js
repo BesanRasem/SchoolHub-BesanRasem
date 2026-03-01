@@ -25,41 +25,23 @@ router.post(
   .isMongoId()
   .withMessage("select class"),
 
- body("parentNationalId")
+body("parentPhone")
   .if(body("role").equals("student"))
-  .optional() 
-  .isString()
-  .withMessage("Invalid parentNationalId"),
+  .notEmpty().withMessage("Parent phone is required for students")
+  .matches(/^07\d{8}$/).withMessage("Parent phone must start with 07 and be 10 digits"),
 
-  
-  body("parentPhone")
-    .if(body("role").equals("student"))
-    .notEmpty()
-    .withMessage("parentPhone is required for students")
-    .isMobilePhone()
-    .withMessage("Invalid parentPhone"),
-
-    body("nationalId")
-  .optional()
-  .matches(/^\d{10}$/)
-  .withMessage("National ID must be exactly 10 digits"),
-
+body("nationalId")
+  .if(body("role").isIn(["student"]))
+  .notEmpty().withMessage("National ID is required")
+  .matches(/^\d{10}$/).withMessage("National ID must be exactly 10 digits"),
   body("parentNationalId")
   .if(body("role").equals("student"))
-  .optional()
-  .matches(/^\d{10}$/)
-  .withMessage("Parent National ID must be exactly 10 digits"),
-
-  body("parentPhone")
-  .if(body("role").equals("student"))
-  .matches(/^07\d{8}$/)
-  .withMessage("Parent phone must be 10 digits and start with 07"),
-
- 
-
+  .notEmpty().withMessage("Parent National ID is required for students")
+  .matches(/^\d{10}$/).withMessage("Parent National ID must be exactly 10 digits"),
   body("birthDate")
     .optional()
     .isISO8601()
+    .withMessage("Birth date must be a valid date")
     .toDate(),
 
   validate,
@@ -136,60 +118,42 @@ router.get(
 )
 router.put(
   "/:id",
+  auth,
+  schoolAdmin,
 
-    body("name")
+  body("name")
     .notEmpty()
     .withMessage("Name is required"),
 
-  body("role")
-    .isIn(["student","teacher","parent"])
-    .withMessage("Role must be student, teacher, or parent"),
-
-
   body("classId")
-  .optional()
-  .isMongoId()
-  .withMessage("select class"),
+    .optional()
+    .isMongoId()
+    .withMessage("select class"),
 
- body("parentNationalId")
-  .if(body("role").equals("student"))
-  .optional() 
-  .isString()
-  .withMessage("Invalid parentNationalId"),
-
-  
-  body("parentPhone")
-    .if(body("role").equals("student"))
-    .notEmpty()
-    .withMessage("parentPhone is required for students")
-    .isMobilePhone()
-    .withMessage("Invalid parentPhone"),
-
-    body("nationalId")
-  .optional()
-  .matches(/^\d{10}$/)
-  .withMessage("National ID must be exactly 10 digits"),
+  body("nationalId")
+    .optional()
+    .matches(/^\d{10}$/)
+    .withMessage("National ID must be exactly 10 digits"),
 
   body("parentNationalId")
-  .if(body("role").equals("student"))
-  .optional()
-  .matches(/^\d{10}$/)
-  .withMessage("Parent National ID must be exactly 10 digits"),
+    .notEmpty()
+    .withMessage("Parent National ID is required for students")
+    .matches(/^\d{10}$/)
+    .withMessage("Parent National ID must be exactly 10 digits"),
 
   body("parentPhone")
-  .if(body("role").equals("student"))
-  .matches(/^07\d{8}$/)
-  .withMessage("Parent phone must be 10 digits and start with 07"),
-
- 
+    .notEmpty()
+    .withMessage("Parent phone is required for students")
+    .matches(/^07\d{8}$/)
+    .withMessage("Parent phone must be 10 digits and start with 07"),
 
   body("birthDate")
     .optional()
     .isISO8601()
-  .toDate(),
+    .withMessage("Birth date must be a valid date")
+    .toDate(),
+
   validate,
-  auth,
-  schoolAdmin,
   userController.updateStudent
 );
 
@@ -219,6 +183,12 @@ router.put(
   "/students/by-class",
   auth,
   userController.getStudentsByClass
+);
+router.delete(
+  "/teachers/:id",
+  auth,
+  allowRoles("schooladmin"),
+  userController.deleteTeacher
 );
 
 module.exports = router;

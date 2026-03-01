@@ -126,6 +126,7 @@ useEffect(() => {
         <h3 className="fw-bold title">Class Exams</h3>
         <button className="btn btn-primary" onClick={handleOpenAdd}>+ Add Exam</button>
       </div>
+      <div className="table-responsive">
 
         <table className="table  table-bordered table-striped align-middle mb-0">
           <thead >
@@ -150,6 +151,7 @@ useEffect(() => {
             ))}
           </tbody>
         </table>
+        </div>
 
       {showModal && (
         <>

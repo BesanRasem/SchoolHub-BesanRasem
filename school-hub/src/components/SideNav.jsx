@@ -30,8 +30,8 @@ function SideNav() {
           <li><Link to="/dashboard/student/schedule" className="sidenav-link"><i className="fa-solid fa-calendar-days"></i> Schedule</Link></li>
           <li><Link to="/dashboard/student/homework" className="sidenav-link"><i className="fa-solid fa-book"></i> Homework</Link></li>
           <li><Link to="/dashboard/student/exams" className="sidenav-link"><i className="fa-solid fa-file-lines"></i> Exams</Link></li>
-          <li><Link to="/dashboard/student/lessons" className="sidenav-link"><i className="fa-solid fa-user"></i> Lessons</Link></li>
-          <li><Link to="/dashboard/student/grades" className="sidenav-link"><i className="fa-solid fa-chart-line"></i> Grades</Link></li>
+          <li><Link to="/dashboard/student/lessons" className="sidenav-link"><i className="fa-solid fa-chalkboard-teacher"></i> Lessons</Link></li>
+          <li><Link to="/dashboard/student/grades" className="sidenav-link"><i className="fa-solid fa-clipboard-check"></i> Grades</Link></li>
           <li>
             <div className="sidenav-link logout-link" onClick={handleLogout}>
               <i className="fa-solid fa-right-from-bracket"></i>
@@ -56,6 +56,12 @@ function SideNav() {
               <Link className="nav-link" to="/dashboard/student/exams">Exams</Link>
               <Link className="nav-link" to="/dashboard/student/lessons">Lessons</Link>
               <Link className="nav-link" to="/dashboard/student/grades">Grades</Link>
+              <li>
+            <div className="sidenav-link logout-link" onClick={handleLogout}>
+              <i className="fa-solid fa-right-from-bracket"></i>
+              <span>Logout</span>
+            </div>
+          </li>
             </div>
           </div>
         </div>

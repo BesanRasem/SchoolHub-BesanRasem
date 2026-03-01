@@ -4,18 +4,33 @@ const User = require("../models/user");
 exports.getAttendance = async (req, res, next) => {
   try {
     const { classId } = req.params;
-    const { date } = req.query;
+    const { date, page = 1, limit = 10 } = req.query; // نقرأ الباجينيشن
 
     if (!classId || !date) return res.status(400).json({ message: "classId and date required" });
 
-    const students = await User.find({ classId, role: "student" }).select("name _id").lean();
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // جلب الطلاب مع pagination
+    const totalStudents = await User.countDocuments({ classId, role: "student" });
+    const students = await User.find({ classId, role: "student" })
+                               .select("name _id")
+                               .skip(skip)
+                               .limit(parseInt(limit))
+                               .lean();
 
     let attendance = await Attendance.findOne({ classId, date }).lean();
     if (!attendance) {
       attendance = { students: students.map(s => ({ studentId: s._id, status: "present" })) };
+    } else {
+      // هنا نفلتر بس الطلاب اللي موجودين في الصفحة الحالية
+      attendance.students = attendance.students.filter(a => students.some(s => s._id.equals(a.studentId)));
     }
 
-    res.json({ students, attendance });
+    res.json({
+      students,
+      attendance,
+      pagination: { total: totalStudents, page: parseInt(page), limit: parseInt(limit) }
+    });
   } catch (err) {
     next(err);
   }
@@ -30,7 +45,6 @@ exports.getStudentAttendance = async (req, res, next) => {
     let total = 0;
     let present = 0;
 
-    // هنا تعديلنا
     let absentDates = [];
 
     attendanceRecords.forEach(record => {
@@ -38,14 +52,13 @@ exports.getStudentAttendance = async (req, res, next) => {
         if (s.studentId.toString() === studentId) {
           total++;
           if (s.status === "present") present++;
-          if (s.status === "absent") absentDates.push(record.date); // إضافة الأيام الغياب
+          if (s.status === "absent") absentDates.push(record.date); 
         }
       });
     });
 
     const rate = total === 0 ? 0 : Math.round((present / total) * 100);
 
-    // نرجع الغيابات مع البيانات
     res.json({ totalDays: total, presentDays: present, attendanceRate: rate, absentDates });
 
   } catch (err) {

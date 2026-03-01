@@ -10,10 +10,9 @@ function TeacherAttendancePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 10; // عدد الطلاب لكل صفحة
+  const limit = 10; 
 
   useEffect(() => {
     if (!classId) return;
@@ -21,27 +20,25 @@ function TeacherAttendancePage() {
   }, [classId, date, page]);
 
   const fetchAttendance = async (currentPage = 1) => {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `/attendance/${classId}?date=${date}&page=${currentPage}&limit=${limit}`
-      );
+  try {
+    setLoading(true);
+    const res = await axios.get(
+      `/attendance/${classId}?date=${date}&page=${currentPage}&limit=${limit}`
+    );
 
-      setStudents(res.data.students || []);
-      setAttendance(res.data.attendance?.students || []);
+    setStudents(res.data.students || []);
+    setAttendance(res.data.attendance?.students || []);
 
-      // حساب الصفحات
-      const total = res.data.pagination?.total || (res.data.students?.length || 0);
-      setTotalPages(Math.ceil(total / limit));
-    } catch (err) {
-      console.error("Error fetching attendance:", err);
-      setStudents([]);
-      setAttendance([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    const total = res.data.pagination?.total || 0; // ← استخدم total من backend
+    setTotalPages(Math.ceil(total / limit));
+  } catch (err) {
+    console.error("Error fetching attendance:", err);
+    setStudents([]);
+    setAttendance([]);
+  } finally {
+    setLoading(false);
+  }
+};
   const handleStatusChange = (studentId, status) => {
     setAttendance(prev =>
       prev.map(s => (s.studentId === studentId ? { ...s, status } : s))
@@ -83,7 +80,8 @@ function TeacherAttendancePage() {
         <p className="text-center">Loading...</p>
       ) : (
         <>
-          <table className="table table-bordered">
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped">
             <thead>
               <tr className="head">
                 <th>Student Name</th>
@@ -127,8 +125,8 @@ function TeacherAttendancePage() {
               )}
             </tbody>
           </table>
+          </div>
 
-          {/* ================= PAGINATION ================= */}
           <div className="d-flex justify-content-between mt-3">
             <button
               disabled={page === 1}

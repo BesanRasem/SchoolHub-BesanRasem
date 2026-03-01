@@ -1,35 +1,35 @@
 const SubjectInfo = require("../models/subjectInfo");
-const path = require("path");
-const fs = require("fs");
+const cloudinary = require("../config/cloudinary");
+const Subject = require("../models/subject"); 
 
-// حفظ أو تعديل معلومات المادة
 exports.saveSubjectInfo = async (req, res, next) => {
   try {
     const { subjectId, description } = req.body;
-
     if (!subjectId) return res.status(400).json({ message: "subjectId is required" });
 
     let imageUrl;
+
     if (req.files && req.files.image) {
       const imageFile = req.files.image;
-      const uploadPath = path.join(__dirname, "../uploads/subjects", imageFile.name);
-
-      // إنشاء مجلد لو ما موجود
-      if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
-
-      await imageFile.mv(uploadPath);
-      imageUrl = `/uploads/subjects/${imageFile.name}`; // مسار للوصول من الفرونت
+      const result = await cloudinary.uploader.upload(imageFile.tempFilePath, {
+        folder: `schoolhub/${req.user.schoolId}/subjects`,
+        public_id: `subject-${Date.now()}`,
+        overwrite: true,
+      });
+      imageUrl = result.secure_url;
     }
 
-    // تحقق إذا موجود مسبقاً
+    // جلب info الحالي
     let info = await SubjectInfo.findOne({ subjectId });
 
     if (info) {
+      // تحديث الحقول إذا فيه قيم جديدة
       info.description = description || info.description;
       if (imageUrl) info.imageUrl = imageUrl;
       info.updatedAt = Date.now();
       await info.save();
     } else {
+      // إنشاء جديد لو ما موجود
       info = await SubjectInfo.create({
         subjectId,
         description,
@@ -38,13 +38,13 @@ exports.saveSubjectInfo = async (req, res, next) => {
       });
     }
 
-    res.json({ ok: true, data: info });
+    res.json({ ok: true, message: "Subject info updated successfully!", data: info });
+
   } catch (err) {
     next(err);
   }
 };
 
-// جلب info لمادة معينة
 exports.getSubjectInfo = async (req, res, next) => {
   try {
     const { subjectId } = req.query;
@@ -54,5 +54,31 @@ exports.getSubjectInfo = async (req, res, next) => {
     res.json({ ok: true, data: info });
   } catch (err) {
     next(err);
+  }
+};
+exports.getSubjectsForStudent = async (req, res, next) => {
+  try {
+    const { classId } = req.query;
+    if (!classId) return res.status(400).json({ message: "classId required" });
+
+    const subjects = await Subject.find({ 
+      classId, 
+      schoolId: req.user.schoolId 
+    }).lean();
+
+    const subjectsWithInfo = await Promise.all(
+      subjects.map(async (sub) => {
+        const info = await SubjectInfo.findOne({ subjectId: sub._id }).lean();
+        return {
+          ...sub,
+          description: info?.description || "",
+          imageUrl: info?.imageUrl || "",
+        };
+      })
+    );
+
+    res.json({ ok: true, data: subjectsWithInfo });
+  } catch (err) {
+    next(err); 
   }
 };

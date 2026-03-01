@@ -24,7 +24,11 @@ import HomeworkStudentPage from "./StudentPages/HomeworkStudentPage";
 import LessonsStudentPage from "./StudentPages/LessonsStudentPage";
 import SubjectDetailsPage from "./StudentPages/SubjectDetailsPage ";
 import TeacherLessonPage from "./TeacherPage/TeacherLessonPage";
-
+import TeacherHomeworkPage from "./TeacherPage/TeacherHomeworkPage";
+import SuperAdminLayout from "./SuperAdminPages/SuperAdminLayout";
+import SchoolsPage from "./SuperAdminPages/SchoolsPage";
+import SchoolAdminsPage from "./SuperAdminPages/SchoolAdminsPage ";
+import HolidaysPage from "./SuperAdminPages/HolidaysPage ";
 
 function App() {
   
@@ -79,9 +83,21 @@ function App() {
           <Route path="exams" element={<TeacherExamsPage />} />
           <Route path="schedule" element={<TeacherSchedulePage/>}/>
           <Route path="lessons" element={<TeacherLessonPage/>}/>
+          <Route path="homework" element={<TeacherHomeworkPage/>}/>
         </Route>
       </Route>
-     
+     <Route
+  path="/dashboard/superadmin"
+  element={
+    <ProtectedRoute allowedRole="superadmin">
+      <SuperAdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="schools" element={<SchoolsPage />} />
+  <Route path="admins" element={<SchoolAdminsPage />} />
+  <Route path="holidays" element={<HolidaysPage />} />
+</Route>
 
 
 

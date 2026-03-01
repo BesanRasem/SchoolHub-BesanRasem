@@ -249,19 +249,21 @@ link{
   background-color:rgb(206, 248, 210) ;
   border: 0.5px solid black;
 }
+/*
  .progress-bar-lessons{
   width: 75% !important;
  background-color: rgb(9, 185, 9) !important;
- }
+ }*/
  /*
  .progress-bar-attendance{
   width: 5% !important;
  background-color: rgb(241, 174, 30)!important;
  }*/
+ /*
 .progress-bar-assigment{
     width: 50% !important;
  background-color: rgb(9, 185, 9) !important;
-}
+}*/
 
 .react-datepicker__header{
     background-color: rgb(140, 30, 210)!important;
@@ -340,7 +342,7 @@ link{
 .holiday-btn{
   background-color: rgb(165, 247, 165)
 }
-.homework-btn{
+.h-btn{
   background-color: rgb(252, 212, 137);
 }
 .exam-btn{
@@ -372,3 +374,15 @@ background-color: rgb(165, 165, 248);
   .SideNavContainer {
     display: flex;      
   }}
+ 
+.status-good {
+  background-color: green;
+}
+
+.status-warning {
+ background-color: #dda20a;
+}
+
+.status-danger {
+  background-color: rgb(245, 29, 29);
+}

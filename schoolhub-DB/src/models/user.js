@@ -39,11 +39,25 @@ const userSchema = new mongoose.Schema({
 
   },
 
-  parentPhone: { type: String, default: null },
+  parentPhone: {
+  type: String,
+  sparse: true,
+  trim: true,
+  required: function () {
+    return this.role === "parent";
+  }
+},
 
   isActivated: { type: Boolean, default: false },
 
-  nationalId: { type: String, unique: true, sparse: true},
+  nationalId: {
+  type: String,
+  unique: true,
+  sparse: true,
+  required: function () {
+    return this.role === "student" || this.role === "parent";
+  }
+},
 
   createdAt: { type: Date, default: Date.now },
 });

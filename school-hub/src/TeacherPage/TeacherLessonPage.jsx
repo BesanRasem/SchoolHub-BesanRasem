@@ -1,31 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
+import "./Teacherashboard.css";
 
 function TeacherContentPage() {
   const { classId } = useParams();
 
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [subjectInfo, setSubjectInfo] = useState({
-    description: "",
-    image: null,
-    imagePreview: null,
-    saved: false,
-  });
+  const [videoTitle, setVideoTitle] = useState("");
+  const [videoFile, setVideoFile] = useState(null);
 
-  /* ================= RESET لما يتغير الصف ================= */
-  useEffect(() => {
-    setSubjects([]);
-    setSelectedSubject("");
-    setLessons([]);
-    setSubjectInfo({ description: "", image: null, imagePreview: null, saved: false });
-  }, [classId]);
+  const [subjectTitle, setSubjectTitle] = useState("");
+  const [subjectDescription, setSubjectDescription] = useState("");
+  const [subjectImage, setSubjectImage] = useState(null);
+  const [subjectImageUrl, setSubjectImageUrl] = useState("");
 
-  /* ================= FETCH SUBJECTS ================= */
+  const [successMessage, setSuccessMessage] = useState("");
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -38,74 +34,93 @@ function TeacherContentPage() {
     if (classId) fetchSubjects();
   }, [classId]);
 
-  /* ================= FETCH LESSONS ================= */
   useEffect(() => {
     if (!selectedSubject) {
       setLessons([]);
-      setSubjectInfo({ description: "", image: null, imagePreview: null, saved: false });
+      setSubjectTitle("");
+      setSubjectDescription("");
+      setSubjectImage(null);
+      setSubjectImageUrl("");
       return;
     }
 
+    setSubjectTitle(selectedSubject.name || "");
+    setSubjectImage(null);
+
+    const fetchSubjectInfo = async () => {
+      try {
+        const res = await api.get(
+           `/subject-info/info?subjectId=${selectedSubject._id}`
+        );
+
+        if (res.data) {
+          setSubjectDescription(res.data.description || "");
+          setSubjectImageUrl(res.data.imageUrl || "");
+        } else {
+          setSubjectDescription("");
+          setSubjectImageUrl("");
+        }
+      } catch (err) {
+        console.error("Subject info error:", err);
+      }
+    };
+
     const fetchLessons = async () => {
       try {
-        const res = await api.get(`/lessons?subjectId=${selectedSubject}`);
+        const res = await api.get(`/lessons?subjectId=${selectedSubject._id}`);
         setLessons(res.data.data || []);
       } catch (err) {
         console.error("Lessons error:", err);
       }
     };
 
-    const fetchSubjectInfo = async () => {
-      try {
-        const res = await api.get(`/subject-info/info?subjectId=${selectedSubject}`);
-        const info = res.data.data;
-        setSubjectInfo({
-          description: info?.description || "",
-          image: null,
-          imagePreview: info?.imageUrl || null,
-          saved: false,
-        });
-      } catch (err) {
-        console.error("Subject info fetch error:", err);
-        setSubjectInfo({ description: "", image: null, imagePreview: null, saved: false });
-      }
-    };
-
-    fetchLessons();
     fetchSubjectInfo();
+    fetchLessons();
   }, [selectedSubject]);
 
-  /* ================= HANDLE SUBJECT INFO SAVE ================= */
-  const handleSubjectSave = async () => {
-    if (!selectedSubject) return;
+ const handleSubjectUpdate = async (e) => {
+  e.preventDefault();
+  if (!selectedSubject) return;
 
-    const formData = new FormData();
-    formData.append("subjectId", selectedSubject);
-    formData.append("description", subjectInfo.description);
-    if (subjectInfo.image) formData.append("image", subjectInfo.image);
+  try {
+    setLoading(true);
 
-    try {
-      setLoading(true);
-      const res = await api.post("/subject-info/update-info", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      const info = res.data.data;
-      setSubjectInfo({
-        description: info.description || "",
-        image: null,
-        imagePreview: info.imageUrl || null,
-        saved: true,
-      });
-    } catch (err) {
-      console.error("Subject info save error:", err.response?.data || err.message);
-    } finally {
-      setLoading(false);
+    await api.put(
+      `/subjects/${selectedSubject._id}`,
+      { name: subjectTitle }
+    );
+
+    const infoFormData = new FormData();
+    infoFormData.append("subjectId", selectedSubject._id);
+    infoFormData.append("description", subjectDescription);
+    if (subjectImage) {
+      infoFormData.append("image", subjectImage);
     }
-  };
 
-  /* ================= UPLOAD VIDEO ================= */
-  const [videoTitle, setVideoTitle] = useState("");
-  const [videoFile, setVideoFile] = useState(null);
+    await api.post(
+      "/subject-info/update-info",
+      infoFormData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    const infoRes = await api.get(
+      `/subject-info/info?subjectId=${selectedSubject._id}`
+    );
+
+    if (infoRes.data) {
+      setSubjectDescription(infoRes.data.description || "");
+      setSubjectImageUrl(infoRes.data.imageUrl || "");
+    }
+
+    setSuccessMessage("Subject updated successfully!");
+    setTimeout(() => setSuccessMessage(""), 3000);
+
+  } catch (err) {
+    console.error("Update subject error:", err.response?.data || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleVideoUpload = async (e) => {
     e.preventDefault();
@@ -113,7 +128,7 @@ function TeacherContentPage() {
 
     const formData = new FormData();
     formData.append("title", videoTitle);
-    formData.append("subjectId", selectedSubject);
+    formData.append("subjectId", selectedSubject._id);
     formData.append("classId", classId);
     formData.append("video", videoFile);
 
@@ -122,10 +137,11 @@ function TeacherContentPage() {
       await api.post("/lessons/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       setVideoTitle("");
       setVideoFile(null);
 
-      const res = await api.get(`/lessons?subjectId=${selectedSubject}`);
+      const res = await api.get(`/lessons?subjectId=${selectedSubject._id}`);
       setLessons(res.data.data || []);
     } catch (err) {
       console.error("Upload error:", err.response?.data || err.message);
@@ -134,27 +150,33 @@ function TeacherContentPage() {
     }
   };
 
-  /* ================= DELETE VIDEO ================= */
   const handleDelete = async (id) => {
-    try {
-      await api.delete(`/lessons/${id}`);
-      setLessons((prev) => prev.filter((l) => l._id !== id));
-    } catch (err) {
-      console.error("Delete error:", err);
-    }
-  };
+  const confirmed = window.confirm("are oyu sure?");
 
+  if (!confirmed) return;
+
+  try {
+    await api.delete(`/lessons/${id}`);
+    setLessons((prev) => prev.filter((l) => l._id !== id));
+  } catch (err) {
+    console.error("Delete error:", err);
+  }
+};
+
+  // ===================== UI =====================
   return (
     <div className="container mt-4">
       <h2 className="fw-bold mb-4">Teacher Lessons</h2>
 
-      {/* ================= SUBJECT SELECT ================= */}
       <div className="mb-3">
         <label className="form-label">Select Subject</label>
         <select
           className="form-select"
-          value={selectedSubject}
-          onChange={(e) => setSelectedSubject(e.target.value)}
+          value={selectedSubject?._id || ""}
+          onChange={(e) => {
+            const sub = subjects.find((s) => s._id === e.target.value);
+            setSelectedSubject(sub || null);
+          }}
         >
           <option value="">-- Select --</option>
           {subjects.map((sub) => (
@@ -165,52 +187,63 @@ function TeacherContentPage() {
         </select>
       </div>
 
-      {/* ================= SUBJECT INFO CARD ================= */}
+      {successMessage && (
+        <div className="alert alert-success">{successMessage}</div>
+      )}
+
       {selectedSubject && (
-        <div className="card p-3 mb-4 shadow-sm">
-          <h5>Subject Information</h5>
+        <form
+          onSubmit={handleSubjectUpdate}
+          className="lesson-card card mb-4 p-3 shadow-sm"
+        >
+          <h5>Edit Subject Info</h5>
+
+          <input
+            type="text"
+            className="form-control mb-2"
+            placeholder="Subject Title"
+            value={subjectTitle}
+            onChange={(e) => setSubjectTitle(e.target.value)}
+          />
 
           <textarea
             className="form-control mb-2"
-            placeholder="Subject description"
-            value={subjectInfo.description}
-            onChange={(e) =>
-              setSubjectInfo({ ...subjectInfo, description: e.target.value, saved: false })
-            }
+            placeholder="Description"
+            value={subjectDescription}
+            onChange={(e) => setSubjectDescription(e.target.value)}
           />
+
+          {subjectImageUrl && (
+            <img
+              src={subjectImageUrl}
+              alt="subject"
+              className="rounded mb-2"
+              style={{
+                width: "100%",
+                maxHeight: "200px",
+                objectFit: "cover",
+              }}
+            />
+          )}
 
           <input
             type="file"
             className="form-control mb-2"
             accept="image/*"
-            onChange={(e) =>
-              setSubjectInfo({
-                ...subjectInfo,
-                image: e.target.files[0],
-                imagePreview: URL.createObjectURL(e.target.files[0]),
-                saved: false,
-              })
-            }
+            onChange={(e) => setSubjectImage(e.target.files[0])}
           />
 
-          {subjectInfo.imagePreview && (
-            <img
-              src={subjectInfo.imagePreview}
-              alt="Preview"
-              className="mb-2"
-              style={{ width: "150px", height: "150px", objectFit: "cover" }}
-            />
-          )}
-
-          <button className="btn btn-success" onClick={handleSubjectSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Subject Info"}
+          <button className="btn btn-primary w-100" disabled={loading}>
+            {loading ? "Updating..." : "Update Subject"}
           </button>
-        </div>
+        </form>
       )}
 
-      {/* ================= UPLOAD VIDEO CARD ================= */}
       {selectedSubject && (
-        <form onSubmit={handleVideoUpload} className="card p-3 mb-4 shadow-sm">
+        <form
+          onSubmit={handleVideoUpload}
+          className="lesson-card card p-3 mb-4 shadow-sm"
+        >
           <h5>Upload New Video</h5>
 
           <input
@@ -234,32 +267,63 @@ function TeacherContentPage() {
         </form>
       )}
 
-      {/* ================= LESSONS LIST ================= */}
       {selectedSubject && (
         <div>
-          <h5 className="mb-3">Videos</h5>
-          {lessons.length === 0 && <p className="text-muted">No videos uploaded yet.</p>}
+          <h6 className="mb-3 fw-bold video-label">Videos</h6>
 
-          {lessons.map((lesson) => (
-            <div key={lesson._id} className="card mb-3 p-3 shadow-sm">
-              <h6>{lesson.title}</h6>
+          {lessons.length === 0 && (
+            <p className="text-muted">No videos uploaded yet.</p>
+          )}
 
-              <iframe
-                src={`https://player.vimeo.com/video/${lesson.vimeoVideoId}`}
-                width="100%"
-                height="300"
-                allow="autoplay; fullscreen"
-                title={lesson.title}
-              ></iframe>
-
-              <button
-                className="btn btn-danger mt-2"
-                onClick={() => handleDelete(lesson._id)}
+          <div className="d-flex flex-column gap-3">
+            {lessons.map((lesson) => (
+              <div
+                key={lesson._id}
+                className="card p-3 shadow-sm d-flex justify-content-between flex-row align-items-center"
+                onClick={() => setSelectedLesson(lesson)}
               >
-                Delete
-              </button>
-            </div>
-          ))}
+                <h6 className="mb-0">{lesson.title}</h6>
+
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(lesson._id);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {selectedLesson && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+          
+        >
+          <div
+            className="bg-white rounded p-3 position-relative"
+          
+          >
+            <button
+              className="btn btn-danger position-absolute top-0 end-0 m-2"
+              onClick={() => setSelectedLesson(null)}
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h5>{selectedLesson.title}</h5>
+
+            <video
+              src={selectedLesson.videoUrl}
+              controls
+              className="w-100 mt-2 rounded"
+              style={{ maxHeight: "500px" }}
+            />
+          </div>
         </div>
       )}
     </div>

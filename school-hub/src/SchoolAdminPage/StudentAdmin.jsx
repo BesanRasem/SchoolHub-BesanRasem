@@ -2,80 +2,168 @@ import { useState, useEffect } from "react";
 import api from "../api/axios";
 import "./AdminDashboard.css";
 
+import $ from "jquery";
+import "datatables.net";
+import "datatables.net-buttons";
+import "datatables.net-buttons/js/buttons.html5";
+import "datatables.net-buttons/js/buttons.print";
+
+import JSZip from "jszip";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+pdfMake.vfs = pdfFonts;
+window.JSZip = JSZip;
+
 function StudentsPage() {
   const [students, setStudents] = useState([]);
-  const [filteredStudents, setFilteredStudents] = useState([]);
   const [classes, setClasses] = useState([]);
-
   const [search, setSearch] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState(null);
 
   const [studentName, setStudentName] = useState("");
   const [studentBirthDate, setStudentBirthDate] = useState("");
   const [studentNationalId, setStudentNationalId] = useState("");
-
   const [parentName, setParentName] = useState("");
   const [parentNationalId, setParentNationalId] = useState("");
   const [parentPhone, setParentPhone] = useState("");
-
   const [classId, setClassId] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const [editingStudentId, setEditingStudentId] = useState(null);
-
-  // Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
+  // Fetch classes
   useEffect(() => {
     fetchClasses();
   }, []);
 
+  // Fetch students
   useEffect(() => {
     fetchStudents(page);
   }, [page, search, selectedClass]);
+
+  const fetchClasses = async () => {
+    try {
+      const res = await api.get("/classes/");
+      const classesData = res.data.data.map((c) => ({
+        ...c,
+        name: `${c.grade}${c.section}`,
+      }));
+      setClasses(classesData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchStudents = async (currentPage = 1) => {
     setLoading(true);
     try {
       const res = await api.get("/users", {
-        params: {
-          page: currentPage,
-          limit,
-          search,
-          classId: selectedClass
-        }
+        params: { page: currentPage, limit, search, classId: selectedClass },
       });
 
-      setStudents(res.data.data || []);
-      const total = res.data.pagination?.total || res.data.data?.length || 0;
+      const data = res.data.data || [];
+      setStudents(data);
+
+      const total = res.data.pagination?.total || data.length || 0;
       setTotalPages(Math.ceil(total / limit));
-      setFilteredStudents(res.data.data || []);
     } catch (err) {
-      console.error("Error fetching students:", err);
+      console.error(err);
       setStudents([]);
-      setFilteredStudents([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchClasses = async () => {
-    try {
-      const res = await api.get("/classes/");
-      const classesData = res.data.data.map(c => ({
-        ...c,
-        name: `${c.grade}${c.section}`
+  useEffect(() => {
+    if (!loading && students.length > 0) {
+      if ($.fn.DataTable.isDataTable("#studentsTable")) {
+        $("#studentsTable").DataTable().destroy();
+      }
+
+      const tableData = students.map((s) => ({
+        _id: s._id,
+        name: s.name || "-",
+        studentId: s._id,
+        email: s.email || "-",
+        nationalId: s.nationalId || "-",
+        className: s.classId ? `${s.classId.grade || ""}${s.classId.section || ""}` : "-",
+        parentName: s.parentId?.name || "-",
+        parentEmail: s.parentId?.email || "-",
+        parentNationalId: s.parentId?.nationalId || "-",
+        parentPhone: s.parentId?.parentPhone || "-",
+        parentId: s.parentId?._id || "-",
       }));
-      setClasses(classesData);
-    } catch (err) {
-      console.error("Error fetching classes:", err);
+
+      $("#studentsTable").DataTable({
+        data: tableData,
+        columns: [
+          { data: "name", title: "Student Name" },
+          { data: "studentId", title: "Student ID" },
+          { data: "email", title: "Email" },
+          { data: "nationalId", title: "National ID" },
+          { data: "className", title: "Class" },
+          { data: "parentName", title: "Parent Name" },
+          { data: "parentEmail", title: "Parent Email" },
+          { data: "parentNationalId", title: "Parent National ID" },
+          { data: "parentPhone", title: "Parent Phone" },
+          { data: "parentId", title: "Parent ID" },
+          {
+            data: null,
+            title: "Actions",
+            
+render: (data) =>
+  `<div class="d-flex gap-1">
+     <button class="btn btn-sm btn-primary edit-btn" data-id="${data._id}">Edit</button>
+     <button class="btn btn-sm btn-primary delete-btn" data-id="${data._id}">Delete</button>
+   </div>`,
+          },
+        ],
+        dom: "Bfrtip",
+        buttons: [
+          {
+            extend: "excelHtml5",
+            text: '<i class="fa fa-file-excel"></i> Excel',
+            title: "Students",
+            className: "btn btn-sm btn-primary exels-btn me-1",
+          },
+          {
+            extend: "pdfHtml5",
+            text: '<i class="fa fa-file-pdf"></i> PDF',
+            title: "Students",
+            orientation: "landscape",
+            className: "btn btn-sm btn-primary exels-btn me-1",
+          },
+          {
+            extend: "print",
+            text: '<i class="fa fa-print"></i> Print',
+            title: "Students",
+            className: "btn btn-sm btn-primary exels-btn",
+          },
+        ],
+        paging: false,
+        searching: true,
+        ordering: false,
+        info: false,
+      });
+
+      $("#studentsTable").on("click", ".edit-btn", function () {
+        const id = $(this).data("id");
+        const student = students.find((s) => s._id === id);
+        if (student) handleEditClick(student);
+      });
+
+      $("#studentsTable").on("click", ".delete-btn", function () {
+        const id = $(this).data("id");
+        handleDelete(id);
+      });
     }
-  };
+  }, [students, loading]);
 
   const handleDelete = async (studentId) => {
     if (!window.confirm("Are you sure you want to delete this student?")) return;
@@ -108,6 +196,7 @@ function StudentsPage() {
     setParentPhone("");
     setClassId("");
     setEditingStudentId(null);
+    setErrorMsg("");
   };
 
   const handleAddStudent = async (e) => {
@@ -116,27 +205,20 @@ function StudentsPage() {
     setErrorMsg("");
 
     try {
+      const payload = {
+        name: studentName,
+        birthDate: studentBirthDate || null,
+        nationalId: studentNationalId || null,
+        classId: classId || null,
+        parentName,
+        parentNationalId: parentNationalId || null,
+        parentPhone,
+      };
+
       if (editingStudentId) {
-        await api.put(`/users/${editingStudentId}`, {
-          name: studentName,
-          birthDate: studentBirthDate || null,
-          nationalId: studentNationalId || null,
-          classId: classId || null,
-          parentName,
-          parentNationalId: parentNationalId || null,
-          parentPhone,
-        });
+        await api.put(`/users/${editingStudentId}`, payload);
       } else {
-        await api.post("/users/create", {
-          name: studentName,
-          birthDate: studentBirthDate || null,
-          nationalId: studentNationalId || null,
-          role: "student",
-          classId: classId || null,
-          parentName,
-          parentNationalId: parentNationalId || null,
-          parentPhone,
-        });
+        await api.post("/users/create", { ...payload, role: "student" });
       }
 
       fetchStudents(page);
@@ -156,7 +238,7 @@ function StudentsPage() {
 
   return (
     <div className="container-fluid mt-4">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Students</h2>
         <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
           + Add Student
@@ -164,25 +246,11 @@ function StudentsPage() {
       </div>
 
       <div className="row mb-3">
-        <div className="col-md-6 mb-2">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by name, ID, or national ID"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+        
         <div className="col-md-4 mb-2">
-          <select
-            className="form-select"
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-          >
+          <select className="form-select" value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
             <option value="">All Classes</option>
-            {classes.map((c) => (
-              <option key={c._id} value={c._id}>{c.name}</option>
-            ))}
+            {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
           </select>
         </div>
       </div>
@@ -190,106 +258,58 @@ function StudentsPage() {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <>
-          <div className="table-responsive">
-            <table className="table table-striped table-bordered">
-              <thead>
-                <tr className="table-head">
-                  <th>Name</th>
-                  <th>ID</th>
-                  <th>Email</th>
-                  <th>Birth Date</th>
-                  <th>National ID</th>
-                  <th>Parent Name</th>
-                  <th>Parent ID</th>
-                  <th>Parent Email</th>
-                  <th>Parent Phone</th>
-                  <th>Class</th>
-                  <th>Parent National ID</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+        <div className="table-responsive">
+          <table id="studentsTable" className="table table-striped table-bordered">
+            <thead>
+              <tr className="table-head">
+                <th>Name</th>
+                <th>System ID</th>
+                <th>Email</th>
+                <th>National ID</th>
+                <th>Parent Phone</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody />
+          </table>
 
-              <tbody>
-                {filteredStudents.map((s) => (
-                  <tr key={s._id}>
-                    <td>{s.name}</td>
-                    <td>{s._id}</td>
-                    <td>{s.email || "-"}</td>
-                    <td>{s.birthDate ? new Date(s.birthDate).toLocaleDateString() : "-"}</td>
-                    <td>{s.nationalId || "-"}</td>
-                    <td>{s.parentId?.name || "-"}</td>
-                    <td>{s.parentId?._id || "-"}</td>
-                    <td>{s.parentId?.email || "-"}</td>
-                    <td>{s.parentId?.parentPhone || "-"}</td>
-                    <td>
-                      {s.classId ? classes.find(c => c._id === (s.classId?._id || s.classId))?.name : "Not Assigned"}
-                    </td>
-                    <td>{s.parentId?.nationalId || "-"}</td>
-                    <td className="d-flex">
-                      <button className="btn btn-sm btn-primary me-1" onClick={() => handleEditClick(s)}>Edit</button>
-                      <button className="btn btn-sm btn-primary" onClick={() => handleDelete(s._id)}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
           <div className="d-flex justify-content-between mt-3">
             <button disabled={page === 1} className="btn btn-sm btn-secondary" onClick={() => handlePageChange(page - 1)}>Prev</button>
             <span>Page {page} of {totalPages}</span>
             <button disabled={page === totalPages} className="btn btn-sm btn-secondary" onClick={() => handlePageChange(page + 1)}>Next</button>
           </div>
-        </>
+        </div>
       )}
 
       {showModal && (
         <>
-          <div className="modal show fade d-block" tabIndex="-1">
+          <div className="modal show fade d-block">
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title">{editingStudentId ? "Edit Student" : "Add Student"}</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                  <button className="btn-close" onClick={() => setShowModal(false)} />
                 </div>
-
                 <div className="modal-body">
                   {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
-
                   <form onSubmit={handleAddStudent}>
-                    <div className="mb-2">
-                      <input type="text" className="form-control" placeholder="Student Name" value={studentName} onChange={(e) => setStudentName(e.target.value)} required/>
-                    </div>
-                    <div className="mb-2">
-                      <input type="date" className="form-control" value={studentBirthDate} onChange={(e) => setStudentBirthDate(e.target.value)} />
-                    </div>
-                    <div className="mb-2">
-                      <input type="text" className="form-control" placeholder="Student National ID" value={studentNationalId} onChange={(e) => setStudentNationalId(e.target.value)} />
-                    </div>
-                    <div className="mb-2">
-                      <input type="text" className="form-control" placeholder="Parent Name" value={parentName} onChange={(e) => setParentName(e.target.value)} required/>
-                    </div>
-                    <div className="mb-2">
-                      <input type="text" className="form-control" placeholder="Parent National ID" value={parentNationalId} onChange={(e) => setParentNationalId(e.target.value)} />
-                    </div>
-                    <div className="mb-2">
-                      <input type="text" className="form-control" placeholder="Parent Phone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required/>
-                    </div>
-                    <div className="mb-3">
-                      <select className="form-select" value={classId} onChange={(e) => setClassId(e.target.value)}>
-                        <option value="">Select Class</option>
-                        {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
-                      </select>
-                    </div>
-                    <button type="submit" className="btn-primary w-100">save</button>
+                    <input className="form-control mb-2" placeholder="Student Name" value={studentName} onChange={(e) => setStudentName(e.target.value)} required />
+                    <input type="date" className="form-control mb-2" value={studentBirthDate} onChange={(e) => setStudentBirthDate(e.target.value)} />
+                    <input className="form-control mb-2" placeholder="Student National ID" value={studentNationalId} onChange={(e) => setStudentNationalId(e.target.value)} />
+                    <input className="form-control mb-2" placeholder="Parent Name" value={parentName} onChange={(e) => setParentName(e.target.value)} />
+                    <input className="form-control mb-2" placeholder="Parent National ID" value={parentNationalId} onChange={(e) => setParentNationalId(e.target.value)} />
+                    <input className="form-control mb-2" placeholder="Parent Phone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} />
+                    <select className="form-select mb-3" value={classId} onChange={(e) => setClassId(e.target.value)}>
+                      <option value="">Select Class</option>
+                      {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                    </select>
+                    <button className="btn btn-primary w-100">Save</button>
                   </form>
                 </div>
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show" onClick={() => setShowModal(false)}></div>
+          <div className="modal-backdrop fade show" onClick={() => setShowModal(false)} />
         </>
       )}
     </div>

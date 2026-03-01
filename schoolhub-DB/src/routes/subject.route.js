@@ -37,7 +37,7 @@ router.put(
   validate,
   subjectController.updateSubject
 )
-router.get("/", auth, subjectController.getSubjects);
+router.get("/teach", auth, teacher, subjectController.getSubjects);
 router.delete("/:id", auth, teacher, subjectController.deleteSubject);
 router.get("/teach", auth, subjectController.getSubjects);
 module.exports = router;

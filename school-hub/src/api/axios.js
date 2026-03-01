@@ -1,4 +1,3 @@
-// api/axios.js
 import axios from "axios";
 
 const api = axios.create({
@@ -7,6 +6,7 @@ const api = axios.create({
 });
 
 let accessToken = null;
+
 export const setAxiosToken = (token) => {
   accessToken = token;
 };
@@ -26,21 +26,21 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes("/login") &&
-      !originalRequest.url.includes("/refresh")
+      !originalRequest.url.includes("/users/login") &&
+      !originalRequest.url.includes("/users/auth/refresh")
     ) {
       originalRequest._retry = true;
 
       try {
-        const res = await api.get("/auth/refresh");
+        const res = await api.get("/users/auth/refresh");
 
-        setAxiosToken(res.data.accessToken); // 🔹 فقط هنا
-
-        // إعادة تنفيذ الطلب
-        originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
-        return api(originalRequest);
+        if (res.data?.accessToken) {
+          setAxiosToken(res.data.accessToken);
+          originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+          return api(originalRequest);
+        }
       } catch (err) {
-        window.location.href = "/login";
+        return Promise.reject(err);
       }
     }
 

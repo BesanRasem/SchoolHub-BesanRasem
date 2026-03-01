@@ -3,7 +3,7 @@ h2{
   font-weight: bold;
 }
 .table-head th{
-  background-color:#a7fc9f ;
+  background-color:#a7fc9f !important;
   color: rgb(167, 48, 236);
 }
 .modal-title{
@@ -66,4 +66,8 @@ border-radius: 16px;
   color: white;
 
 
+}
+
+.exels-btn{
+  border-radius: 16px;
 }

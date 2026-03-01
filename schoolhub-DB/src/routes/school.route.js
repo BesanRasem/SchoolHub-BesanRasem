@@ -14,5 +14,23 @@ router.post(
   validate,
   schoolController.createSchool
 );
+router.get(
+  "/",
+  auth,
+  superAdmin,
+  schoolController.getSchools
+);
+router.put(
+  "/:id",
+  auth,
+  superAdmin,
+  schoolController.updateSchool
+);
 
+router.delete(
+  "/:id",
+  auth,
+  superAdmin,
+  schoolController.deleteSchool
+);
 module.exports = router;

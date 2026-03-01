@@ -1,0 +1,57 @@
+.navbar {
+   background-color:  #a7fc9f ;
+  color:rgb(167, 48, 236);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: rgb(167, 48, 236);
+}
+
+.navbar-brand:hover {
+  color: rgb(109, 107, 247);
+}
+
+.nav-link {
+  color: rgb(167, 48, 236);
+  margin: 0 10px;
+   font-weight: bold;
+    font-size: 16px;
+    border-radius: 16px;
+
+}
+
+.nav-link:hover {
+ background: rgb(167, 48, 236);
+color: white;
+border-radius: 16px;
+
+}
+
+.nav-link.active {
+ background: rgb(167, 48, 236)!important;
+  color: white!important;
+    border-radius: 16px;
+
+}
+.hero-page{
+  min-width: 100%;
+}
+.brand-image img{
+  height: 40px;
+  width: auto;
+}
+
+.btn-secondary{
+  background-color:#a7fc9f ;
+  color:rgb(167, 48, 236) ;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+.btn-secondary:hover{
+  background-color:rgb(167, 48, 236) ;
+  color: white;
+
+
+}

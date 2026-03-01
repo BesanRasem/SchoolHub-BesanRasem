@@ -254,72 +254,116 @@ async function createUser(req, res, next) {
     const {
       name,
       role,
-      nationalId,     
+      nationalId,
       classId,
       birthDate,
       parentName,
-      parentNationalId, 
+      parentNationalId,
       parentPhone,
     } = req.body;
 
     const schoolId = req.user.schoolId;
 
-    if (!name || !role) return res.status(400).json({ ok: false, message: "Name and role are required" });
+    if (!name) {
+      return res.status(400).json({ ok: false, message: "Name is required" });
+    }
+
+    if (!role || !["student", "teacher", "parent"].includes(role)) {
+      return res.status(400).json({ ok: false, message: "Role must be student, teacher, or parent" });
+    }
 
     if (classId) {
+      if (!mongoose.Types.ObjectId.isValid(classId)) {
+        return res.status(400).json({ ok: false, message: "Invalid classId format" });
+      }
       const existingClass = await Class.findOne({ _id: classId, schoolId });
-      if (!existingClass) return res.status(404).json({ ok: false, message: "Class not found in this school" });
+      if (!existingClass) {
+        return res.status(404).json({ ok: false, message: "Class not found in this school" });
+      }
     }
 
     let parent = null;
+
     if (role === "student") {
-      if (!parentName && !parentNationalId && !parentPhone) return res.status(400).json({ ok: false, message: "Parent info required" });
 
-      const parentQuery = { role: "parent", schoolId };
-      if (parentNationalId) parentQuery.nationalId = parentNationalId;
-      else if (parentPhone) parentQuery.name = parentName, parentQuery.parentPhone = parentPhone;
-      else parentQuery.name = parentName;
+      if (!parentNationalId) {
+        return res.status(400).json({ ok: false, message: "Parent National ID is required" });
+      }
+      if (!parentName) {
+        return res.status(400).json({ ok: false, message: "Parent name is required" });
+      }
+      if (!parentPhone) {
+        return res.status(400).json({ ok: false, message: "Parent phone is required" });
+      }
 
-      parent = await User.findOne(parentQuery);
+      parent = await User.findOne({
+        role: "parent",
+        schoolId,
+        nationalId: parentNationalId
+      });
+
       if (!parent) {
         parent = await User.create({
           name: parentName,
-          nationalId: parentNationalId || null,
-          parentPhone: parentPhone || null,
+          nationalId: parentNationalId,
+          parentPhone,
           role: "parent",
           schoolId,
           isActivated: false,
           childrenIds: []
         });
       }
-
-      const existingStudent = await User.findOne({
-        role: "student",
-        schoolId,
-        $or: [
-          { nationalId: nationalId || null },
-          { name, birthDate }
-        ]
-      });
-      if (existingStudent) return res.status(400).json({ ok: false, message: "Student already exists in this school" });
     }
 
-    const newUserData = { name, role, schoolId, nationalId: nationalId || null, classId: classId || null, birthDate: birthDate || null };
-    if (role === "student" && parent) newUserData.parentId = parent._id;
+    if (nationalId) {
+      const existingUser = await User.findOne({ nationalId, schoolId });
+      if (existingUser) {
+        return res.status(400).json({ ok: false, message: "National ID already exists" });
+      }
+    }
+
+    const newUserData = {
+      name,
+      role,
+      schoolId,
+      nationalId: nationalId || null,
+      classId: classId || null,
+      birthDate: birthDate || null,
+    };
+
+    if (role === "student" && parent) {
+      newUserData.parentId = parent._id;
+    }
 
     const newUser = await User.create(newUserData);
 
+    // 6️⃣ تحديث الأب → إضافة الطالب لقائمة الأطفال
     if (role === "student" && parent) {
-      parent.childrenIds.push(newUser._id);
-      await parent.save();
+      if (!parent.childrenIds.includes(newUser._id)) {
+        parent.childrenIds.push(newUser._id);
+        await parent.save();
+      }
     }
 
-    res.status(201).json({ ok: true, message: "User created successfully", data: { user: newUser, parent: parent || null } });
+    res.status(201).json({
+      ok: true,
+      message: "User created successfully",
+      data: { user: newUser, parent: parent || null }
+    });
 
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        ok: false,
+        message: "National ID already exists"
+      });
+    }
+
     next(err);
   }
 }
+
+ 
 async function listStudentsWithParent(req, res, next) {
   try {
     const { page = 1, limit = 10, search = "", classId } = req.query;
@@ -331,6 +375,7 @@ async function listStudentsWithParent(req, res, next) {
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
+         { _id: { $regex: search, $options: "i" } },
         { nationalId: { $regex: search, $options: "i" } }
       ];
     }
@@ -341,6 +386,7 @@ async function listStudentsWithParent(req, res, next) {
         .skip(Number(skip))
         .limit(Number(limit))
         .populate({ path: "parentId", select: "name email parentPhone nationalId" })
+         .populate({ path: "classId", select: "grade section" }) 
         .lean(),
       User.countDocuments(query)
     ]);
@@ -359,18 +405,52 @@ async function listStudentsWithParent(req, res, next) {
     next(err);
   }
 }
-async function deleteStudent(req, res) {
-  const student = await User.findByIdAndUpdate(
-    req.params.id,
-    { isDeleted: true },
-    { new: true }
-  );
+async function deleteTeacher(req, res) {
+  try {
+    const teacherId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({ ok: false, message: "Invalid teacher ID" });
+    }
 
-  if (!student) {
+    const teacher = await User.findById(teacherId);
+    if (!teacher || teacher.role !== "teacher") {
+      return res.status(404).json({ ok: false, message: "Teacher not found" });
+    }
+
+    await User.findByIdAndDelete(teacherId);
+
+    res.json({ ok: true, message: "Teacher deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+}
+async function deleteStudent(req, res) {
+  const student = await User.findById(req.params.id);
+
+  if (!student || student.role !== "student") {
     return res.status(404).json({ ok: false, message: "Student not found" });
   }
 
-  res.json({ ok: true, message: "Student deleted successfully" });}
+  const parentId = student.parentId;
+
+  await User.findByIdAndDelete(student._id);
+
+  if (parentId) {
+    const siblings = await User.countDocuments({
+      parentId,
+      role: "student"
+    });
+
+    if (siblings === 0) {
+      await User.findByIdAndDelete(parentId);
+    }
+  }
+
+  res.json({
+    ok: true,
+    message: "Student deleted successfully"
+  });
+}
 async function updateStudent(req, res) {
   try {
     const studentId = req.params.id;
@@ -390,59 +470,95 @@ async function updateStudent(req, res) {
       return res.status(400).json({ ok: false, message: "Invalid student ID" });
     }
 
-    const student = await User.findById(studentId);
-    if (!student || student.role !== "student") {
+    const student = await User.findOne({
+      _id: studentId,
+      role: "student",
+      schoolId
+    });
+
+    if (!student) {
       return res.status(404).json({ ok: false, message: "Student not found" });
     }
 
-    const existingStudent = await User.findOne({
-      _id: { $ne: studentId },
-      role: "student",
-      schoolId,
-      $or: [
-        { nationalId: nationalId || null },
-        {
-          name: name || student.name,
-          birthDate: birthDate || student.birthDate
-        }
-      ]
-    });
-
-    if (existingStudent) {
-      return res.status(400).json({
-        ok: false,
-        message: "Student data already used by another student"
+    if (nationalId) {
+      const existingStudent = await User.findOne({
+        _id: { $ne: studentId },
+        role: "student",
+        schoolId,
+        nationalId
       });
+
+      if (existingStudent) {
+        return res.status(400).json({
+          ok: false,
+          message: "National ID already used by another student"
+        });
+      }
     }
 
     if (name) student.name = name;
     if (birthDate) student.birthDate = birthDate;
-    if (nationalId !== undefined) student.nationalId = nationalId;
-    if (classId !== undefined) student.classId = classId;
+    if (nationalId) student.nationalId = nationalId;
+    if (classId) student.classId = classId;
 
+    let parent = await User.findOne({
+      role: "parent",
+      schoolId,
+      nationalId: parentNationalId
+    });
+
+    if (!parent) {
+      parent = await User.create({
+        name: parentName,
+        nationalId: parentNationalId,
+        parentPhone,
+        role: "parent",
+        schoolId,
+        isActivated: false,
+        childrenIds: []
+      });
+    }
+
+    const oldParentId = student.parentId;
+
+    // ربط الطالب بالأب الجديد
+    student.parentId = parent._id;
     await student.save();
 
-    if (student.parentId) {
-      const parent = await User.findById(student.parentId);
+    // إضافة الطالب لقائمة الأب الجديد
+    if (!parent.childrenIds.includes(student._id)) {
+      parent.childrenIds.push(student._id);
+      await parent.save();
+    }
 
-      if (parent) {
-        if (parentName !== undefined) parent.name = parentName;
-        if (parentNationalId !== undefined)
-          parent.nationalId = parentNationalId;
-        if (parentPhone !== undefined)
-          parent.parentPhone = parentPhone;
+    if (
+      oldParentId &&
+      oldParentId.toString() !== parent._id.toString()
+    ) {
+      const siblingsCount = await User.countDocuments({
+        parentId: oldParentId,
+        role: "student"
+      });
 
-        await parent.save();
+      if (siblingsCount === 0) {
+        await User.findByIdAndDelete(oldParentId);
       }
     }
 
     res.json({
       ok: true,
-      message: "Student and parent updated successfully",
+      message: "Student updated successfully",
       data: student
     });
 
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        ok: false,
+        message: "National ID already exists"
+      });
+    }
+
     res.status(500).json({ ok: false, message: err.message });
   }
 }
@@ -593,6 +709,7 @@ module.exports = {
     listTeachers,
     updateTeacher,
     createTeacher,
-    getStudentsByClass
+    getStudentsByClass,
+    deleteTeacher
 
 };

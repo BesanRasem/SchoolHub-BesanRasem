@@ -1,158 +1,181 @@
 import { useEffect, useState } from "react";
-import "./LessonsStudentPage.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./LessonsStudentPage.css"; 
 import SideNav from '../components/SideNav';
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
-export default function StudentSubjectsPage() {
+export default function LessonsStudentPage() {
   const { user } = useAuth();
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
-  const [subjectInfo, setSubjectInfo] = useState(null);
   const [lessons, setLessons] = useState([]);
-  const [loadingSubjects, setLoadingSubjects] = useState(true);
-  const [loadingLessons, setLoadingLessons] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  
+ 
 
-  // ================= FETCH SUBJECTS =================
   useEffect(() => {
     const fetchSubjects = async () => {
       if (!user?.classId) return;
-
-      setLoadingSubjects(true);
       try {
-        const res = await api.get(`/subjects?classId=${user.classId}`);
+        setLoading(true);
+        const res = await api.get(`/subject-info/student?classId=${user.classId}`);
         setSubjects(res.data.data || []);
-        if (res.data.data.length > 0) setSelectedSubject(res.data.data[0]);
       } catch (err) {
-        console.error("Subjects error:", err);
+        console.error("Fetch subjects error:", err);
       } finally {
-        setLoadingSubjects(false);
+        setLoading(false);
       }
     };
     fetchSubjects();
   }, [user]);
 
-  // ================= FETCH SUBJECT INFO =================
-  useEffect(() => {
-    const fetchSubjectInfo = async () => {
-      if (!selectedSubject) return;
+  const handleSubjectClick = async (sub) => {
+    setSelectedSubject(sub);
+    try {
+      const res = await api.get(`/lesson-progress?subjectId=${sub._id}`);
+      setLessons(res.data.data || []);
+    } catch (err) {
+      console.error("Fetch lessons error:", err);
+    }
+  };
 
-      try {
-        const res = await api.get(`/subject-info/info?subjectId=${selectedSubject._id}`);
-        setSubjectInfo(res.data.data || null);
-      } catch (err) {
-        console.error("Subject info error:", err);
-        setSubjectInfo(null);
-      }
-    };
-    fetchSubjectInfo();
-  }, [selectedSubject]);
 
-  // ================= FETCH LESSONS =================
-  useEffect(() => {
-    const fetchLessons = async () => {
-      if (!selectedSubject) return;
-      setLoadingLessons(true);
-
-      try {
-        const res = await api.get(`/lessons?subjectId=${selectedSubject._id}`);
-        setLessons(res.data.data || []);
-      } catch (err) {
-        console.error("Lessons error:", err);
-        setLessons([]);
-      } finally {
-        setLoadingLessons(false);
-      }
-    };
-    fetchLessons();
-  }, [selectedSubject]);
 
   return (
-    <div className="student-page">
+    <div className="lessons-student-layout">
       <SideNav />
-      <div className="container my-4">
-        <h1 className="text-center mb-4">My Subjects</h1>
 
-        {/* ================= SUBJECTS SCROLL CARDS ================= */}
-        {loadingSubjects ? (
-          <p className="text-center">Loading subjects...</p>
-        ) : (
-          <div className="subjects-scroll mb-4">
+      <div className="lessons-student-main">
+        <div className="container-fluid py-4">
+          <h1 className="main-page-title">My Subject</h1>
+          
+          <div className="subjects-scroll-row">
             {subjects.map((sub) => (
-              <div
+              <div 
+                className={`subject-card-item ${selectedSubject?._id === sub._id ? 'active' : ''}`} 
                 key={sub._id}
-                className={`subject-card ${selectedSubject?._id === sub._id ? "selected" : ""}`}
-                onClick={() => setSelectedSubject(sub)}
+                onClick={() => handleSubjectClick(sub)}
               >
-                <img
-                  src={sub.imageUrl || "/default-subject.jpg"}
-                  alt={sub.name}
-                  className="subject-card-img"
-                />
-                <h6 className="mt-2 text-center">{sub.name}</h6>
-                <p className="text-center text-muted" style={{ fontSize: "0.8rem" }}>
-                  {sub.teacherId?.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ================= SUBJECT INFO ================= */}
-        {subjectInfo && (
-          <div className="card mb-4 shadow-sm">
-            {subjectInfo.imageUrl && (
-              <img
-                src={subjectInfo.imageUrl}
-                className="card-img-top"
-                alt="Subject"
-                style={{ maxHeight: "250px", objectFit: "cover" }}
-              />
-            )}
-            <div className="card-body">
-              <h5>Description</h5>
-              <p>{subjectInfo.description}</p>
-              <p>
-                <strong>Teacher:</strong> {selectedSubject.teacherId?.name}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* ================= LESSONS ================= */}
-        <h4 className="mb-3">Lessons</h4>
-        {loadingLessons ? (
-          <p>Loading lessons...</p>
-        ) : lessons.length === 0 ? (
-          <p className="text-muted">No lessons available yet.</p>
-        ) : (
-          <div className="row g-3">
-            {lessons.map((lesson) => (
-              <div key={lesson._id} className="col-md-6 col-lg-4">
-                <div className="card shadow-sm h-100">
-                  <iframe
-                    src={lesson.videoUrl.replace(
-                      "https://vimeo.com/",
-                      "https://player.vimeo.com/video/"
-                    )}
-                    width="100%"
-                    height="200"
-                    allow="autoplay; fullscreen"
-                    title={lesson.title}
-                    style={{ border: "none" }}
-                  ></iframe>
-                  <div className="card-body">
-                    <h6 className="card-title">{lesson.title}</h6>
-                    <p className="card-text">
-                      Teacher: {lesson.teacherId?.name || "Unknown"}
-                    </p>
+                <div className="subject-card-img-box">
+                  {sub.imageUrl ? (
+                    <img 
+                      src={sub.imageUrl} 
+                      alt={sub.name} 
+                      className="actual-img"
+                      onError={(e) => {
+                        e.target.style.display = 'none'; 
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div className="img-fallback" style={{display: sub.imageUrl ? 'none' : 'flex'}}>
+                    {sub.name.charAt(0)}
                   </div>
+                </div>
+                <div className="subject-card-info">
+                  <h6 className="sub-title">{sub.name}</h6>
+                  <p className="sub-desc" title={sub.description}>{sub.description || "No description available"}</p>
                 </div>
               </div>
             ))}
           </div>
-        )}
+
+          <div className="lessons-section-wrapper mt-5">
+            {selectedSubject ? (
+              <>
+                <h3 className="lessons-list-title">
+                  Lessons: <span className="purple-text">{selectedSubject.name}</span>
+                </h3>
+                <div className="row mt-4">
+                  {lessons.length > 0 ? (
+                    lessons.map((lesson) => (
+                      <div className="col-12 col-md-6 col-lg-4 mb-3" key={lesson._id}>
+                        <div 
+                          onClick={() => setSelectedLesson(lesson)}
+                        >
+                          <div className="student-card-lesson d-flex justify-content-between align-items-center">
+
+  <div className="d-flex align-items-center gap-2">
+
+    <input
+      type="checkbox"
+      checked={lesson.completed}
+      onClick={(e) => e.stopPropagation()}
+      onChange={async () => {
+        await api.post("/lesson-progress/toggle", {
+          lessonId: lesson._id
+        });
+
+        const res = await api.get(
+          `/lesson-progress?subjectId=${selectedSubject._id}`
+        );
+
+        setLessons(res.data.data || []);
+      }}
+    />
+
+    <span className="lesson-title">{lesson.title}</span>
+
+  </div>
+
+  <i className="fa-solid fa-circle-play"></i>
+
+</div>
+                          
+                          
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-lessons-msg">No lessons found for this subject.</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="select-prompt-box">
+                <p>Select a subject above to view available lessons</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {selectedLesson && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1050 }}
+          onClick={() => setSelectedLesson(null)}
+        >
+          <div
+            className="bg-white rounded p-3 position-relative"
+            style={{
+              width: "80%",
+              maxWidth: "700px",
+              maxHeight: "80%",
+              overflow: "auto",
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="btn btn-danger position-absolute top-0 end-0 m-2"
+              onClick={() => setSelectedLesson(null)}
+            >
+              ✕
+            </button>
+
+            <h5>{selectedLesson.title}</h5>
+
+            <video
+              src={selectedLesson.videoUrl}
+              controls
+              className="w-100 mt-2 rounded"
+              style={{ maxHeight: "500px" }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

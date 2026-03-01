@@ -46,8 +46,8 @@ if (!fs.existsSync(tempDir)) {
 }
     app.use(
   fileUpload({
-    useTempFiles: false
-      // لو ويندوز
+      useTempFiles: true,
+     tempFileDir: "C:/tmp/",
   })
 );
 

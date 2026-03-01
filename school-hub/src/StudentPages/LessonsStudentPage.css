@@ -1,28 +1,223 @@
-/* ===== SCROLLABLE SUBJECT CARDS ===== */
-.subjects-scroll {
+.lessons-student-layout {
+  min-height: 100vh;
+}
+@media (min-width: 992px) {
+  .lessons-student-layout {
+    display: flex;
+  }
+}
+
+.lessons-student-main {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-x: hidden;
+}
+
+.main-page-title {
+  font-size: 32px;
+  color: #a730ec;
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+.subjects-scroll-row {
   display: flex;
   overflow-x: auto;
-  padding-bottom: 10px;
-  gap: 15px;
+  gap: 20px;
+  padding-bottom: 15px;
+  scrollbar-width: thin;
 }
 
-.subject-card {
-  flex: 0 0 150px;
-  cursor: pointer;
-  border-radius: 10px;
+.subject-card-item {
+  min-width: 200px;
+  max-width: 200px;
+  background: #fff;
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-.subject-card.selected {
-  border: 2px solid #0d6efd;
-  transform: scale(1.05);
+.subject-card-item.active, .subject-card-item:hover {
+  border-color: #a730ec;
+  box-shadow: 0 8px 20px rgba(167, 48, 236, 0.15);
 }
 
-.subject-card-img {
+.subject-card-img-box {
   width: 100%;
-  height: 100px;
+  height: 110px;
+  background: #eee;
+  position: relative;
+}
+
+.actual-img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.img-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #a730ec, #a7fc9f);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.subject-card-info {
+  padding: 12px;
+}
+
+.sub-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #333;
+}
+/* هاي عشان اقص النص بعد سطرين
+*/
+.sub-desc {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 32px;
+}
+
+.lesson-box-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-left: 5px solid #a7fc9f;
+  transition: 0.2s;
+  position: relative;
+}
+
+.lesson-box-card.is-completed {
+  background-color: #f0fff4;
+}
+
+.play-icon-bg {
+  width: 35px;
+  height: 35px;
+  background: #a730ec;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.lesson-text-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-title { font-weight: 600; color: #333; }
+.lesson-status-hint { font-size: 11px; color: #999; }
+
+/* Checkbox Style */
+.completion-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  background: #fff;
+  font-family: cursive; /* To make "L" look like a checkmark if needed */
+}
+
+.completion-checkbox.checked {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: #fff;
+  transform: rotate(-10deg); /* Slight tilt for style */
+}
+
+/* Modal */
+.v-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.v-modal-box {
+  background: #fff;
+  width: 90%;
+  max-width: 550px;
+  border-radius: 20px;
+  overflow: hidden;
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.v-modal-header {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.v-modal-title { font-weight: 700; color: #a730ec; }
+
+.v-close-btn {
+  background: #ff4757;
+  color: #fff;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.purple-text { color: #a730ec; }
+.student-card-lesson {
+  padding: 12px 15px;
+  background-color: white;
+  color: #a730ec;
+  border-radius: 10px;
+  border: 1.5px solid #a730ec; 
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  gap: 10px; 
+  margin-bottom: 10px; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+}
+
+.lesson-title {
+  color: #a730ec;
+  font-weight: bold;
+}
+.fa-circle-play{
+  font-size: 30px;
+}
+.lessons-list-title{
+  color:#a730ec;
+  font-weight: bold;
 }

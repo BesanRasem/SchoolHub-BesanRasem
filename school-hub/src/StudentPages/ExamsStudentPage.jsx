@@ -12,15 +12,18 @@ export default function ExamsStudentPage() {
 
   useEffect(() => {
     const fetchExams = async () => {
-      if (!user?.classId) return; // لازم يكون عند الطالب classId
+      if (!user?.classId) return;
       try {
         const res = await api.get(`/exams/student?classId=${user.classId}`);
-        setExamsData(res.data.data.map(e => ({
-          title: e.name,
-          type: e.examType,
-          date: new Date(e.examDate).toISOString().split("T")[0],
-          time: e.examTime
-        })));
+        setExamsData(
+          res.data.data.map(e => ({
+            title: e.name,
+            subject: e.subjectId?.name || "",
+            type: e.examType,
+            date: new Date(e.examDate).toISOString().split("T")[0],
+            time: e.examTime
+          }))
+        );
       } catch (err) {
         console.error(err);
       } finally {
@@ -36,6 +39,7 @@ export default function ExamsStudentPage() {
       <SideNav />
       <div className="exam-schedule container">
         <h1 className="exam-schedule-title text-center">Exam Schedule</h1>
+
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : (
@@ -44,6 +48,7 @@ export default function ExamsStudentPage() {
               <thead>
                 <tr>
                   <th>Exam Name</th>
+                  <th>Subject</th>
                   <th>Type</th>
                   <th>Date</th>
                   <th>Time</th>
@@ -51,8 +56,12 @@ export default function ExamsStudentPage() {
               </thead>
               <tbody>
                 {examsData.map((exam, index) => (
-                  <tr key={index} className={index % 2 === 0 ? "even-row" : "odd-row"}>
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? "even-row" : "odd-row"}
+                  >
                     <td>{exam.title}</td>
+                    <td>{exam.subject}</td>
                     <td>{exam.type}</td>
                     <td>{exam.date}</td>
                     <td>{exam.time}</td>

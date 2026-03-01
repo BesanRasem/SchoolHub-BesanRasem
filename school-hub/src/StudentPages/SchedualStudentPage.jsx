@@ -47,7 +47,6 @@ export default function ScheduleStudentPage() {
       <div className="schedule-content container">
         <h1 className="schedule-title text-center">Class Schedule</h1>
 
-        {/* Day buttons – نفس ستايل الاكزام */}
         <div className="day-selector d-flex justify-content-center flex-wrap mb-4">
           {DAYS.map(day => (
             <button
